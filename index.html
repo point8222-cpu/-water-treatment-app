@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>수처리 운영 관리 시스템</title>
+<title>수처리 운영 관리 시스템 v2 (데모)</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Malgun Gothic', sans-serif; background: #f0f4f8; color: #1a2332; font-size: 14px; }
@@ -112,6 +112,7 @@ input[type="number"] { text-align: right; }
 }
 .btn-icon { padding: 8px 12px; border: 1.5px solid #dde4ed; border-radius: 8px; background: white; cursor: pointer; font-family: inherit; font-size: 12px; }
 .btn-icon.danger { border-color: #e74c3c; color: #e74c3c; }
+.btn-icon.on-dark { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: white; margin-left: auto; }
 
 /* 기록 목록 */
 .record-list { display: flex; flex-direction: column; gap: 8px; }
@@ -133,23 +134,46 @@ input[type="number"] { text-align: right; }
 .selector-row select, .selector-row input { flex: 1; }
 .selector-row button { flex-shrink: 0; }
 
-/* 보고서 출력 영역 */
+/* 보고서 출력 영역 — 실제 공문서(돋움/맑은고딕, 회색 헤더) 톤에 맞춤 */
 .report-box {
-  background: white; border-radius: 12px; padding: 20px;
+  background: white; border-radius: 4px; padding: 20px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 12px;
+  font-family: '돋움', 'Dotum', '맑은 고딕', 'Malgun Gothic', sans-serif; color: #000;
 }
-.report-title { text-align: center; font-size: 17px; font-weight: 700; margin-bottom: 6px; border-bottom: 2px solid #1a5276; padding-bottom: 8px; color: #1a2332; }
-.report-subtitle { text-align: right; font-size: 11px; color: #7f8c8d; margin-bottom: 12px; }
+.report-box[contenteditable="true"] { outline: 2px dashed #2980b9; outline-offset: 4px; }
+
+/* 표지 (주간업무보고 · 월간보고서 — 원본 hwp 표지 그대로 재현) */
+.report-cover { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px dashed #ccc; }
+.cover-tables { display: flex; gap: 6px; align-items: stretch; margin-bottom: 70px; }
+.cover-doc-table { flex: 1; border-collapse: collapse; font-size: 12px; }
+.cover-doc-table td, .cover-doc-table th { border: 1px solid #000; padding: 7px 10px; text-align: center; }
+.cover-doc-table .k { font-weight: 600; width: 30%; }
+.cover-bar-gradient { height: 9px; background: linear-gradient(90deg, #bcd8ee, #0a2f6e); margin-bottom: 16px; }
+.cover-org { font-size: 17px; font-weight: 700; color: #000; margin-bottom: 8px; }
+.cover-title { text-align: center; font-size: 32px; font-weight: 800; color: #000; margin-bottom: 16px; }
+.cover-bar-solid { height: 13px; background: #0a2f6e; margin-bottom: 110px; }
+.cover-company { text-align: center; font-size: 26px; font-weight: 700; color: #000; margin: 4px 0; }
+
+.report-title { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 10px; color: #000; }
+.report-subtitle { text-align: right; font-size: 11px; color: #333; margin-bottom: 12px; }
+.report-inline-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.report-inline-head .lbl { font-size: 13px; font-weight: 700; }
+.report-inline-head .date { font-size: 11px; color: #333; }
 .report-section { margin-bottom: 10px; }
-.report-section-title { font-size: 12px; font-weight: 700; color: white; background: #1a5276; padding: 4px 10px; }
+.report-chapter { text-align: center; margin: 22px 0 10px; }
+.report-chapter .num { font-size: 15px; font-weight: 700; display: block; }
+.report-chapter .ttl { font-size: 13px; font-weight: 700; display: block; margin-top: 2px; }
+.report-section-title { font-size: 12px; font-weight: 700; color: #000; margin: 8px 0 6px; }
 .report-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-.report-table th, .report-table td { border: 1px solid #bdc6cf; padding: 5px 6px; text-align: center; }
-.report-table th { background: #eaf2fb; font-weight: 700; color: #1a5276; }
-.report-table .lc { text-align: left; font-weight: 600; background: #f5f8fa; }
+.report-table th, .report-table td { border: 1px solid #000; padding: 5px 6px; text-align: center; }
+.report-table th { background: #D9D9D9; font-weight: 700; color: #000; }
+.report-table .lc { text-align: left; font-weight: 600; background: #F2F2F2; }
 .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-.info-item { border: 1px solid #d5e8f5; padding: 5px 8px; border-radius: 6px; }
-.info-item .key { font-size: 10px; color: #7f8c8d; }
-.info-item .val { font-size: 12px; font-weight: 600; }
+.info-item { border: 1px solid #000; padding: 5px 8px; border-radius: 0; }
+.info-item .key { font-size: 10px; color: #444; }
+.info-item .val { font-size: 12px; font-weight: 600; color: #000; }
+.report-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.report-hint { font-size: 11px; color: #7f8c8d; margin: -4px 0 8px; }
 
 .no-data { text-align: center; padding: 40px 20px; color: #95a5a6; font-size: 13px; }
 
@@ -169,12 +193,6 @@ input[type="number"] { text-align: right; }
   100% { opacity: 0; }
 }
 
-/* 주간보고 전용 */
-.week-summary-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-.summary-box { background: #f0f7ff; border: 1px solid #d5e8f5; border-radius: 8px; padding: 10px; text-align: center; }
-.summary-box .num { font-size: 18px; font-weight: 700; color: #1a5276; }
-.summary-box .lbl { font-size: 11px; color: #7f8c8d; margin-top: 2px; }
-
 /* 로그인 오버레이 */
 .login-overlay {
   position: fixed; inset: 0; background: linear-gradient(135deg, #1a2332, #1a5276);
@@ -193,10 +211,6 @@ input[type="number"] { text-align: right; }
   font-size: 15px; font-family: inherit; background: #fafbfc; margin-bottom: 10px;
 }
 .login-name-select:focus { outline: none; border-color: #2980b9; }
-.login-part-badge {
-  text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600;
-  margin-bottom: 14px; background: #f0f7ff; color: #1a5276; min-height: 36px;
-}
 .btn-login {
   width: 100%; padding: 14px; background: #1a5276; color: white; border: none;
   border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
@@ -210,13 +224,14 @@ input[type="number"] { text-align: right; }
 /* 헤더 유저 칩 */
 .user-chip { display: flex; align-items: center; gap: 8px; }
 .user-chip .name { font-size: 13px; font-weight: 600; }
-.user-chip .part-tag {
+.user-chip .fac-tag {
   background: rgba(255,255,255,0.2); border-radius: 10px;
-  padding: 2px 8px; font-size: 11px;
+  padding: 2px 8px; font-size: 11px; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  cursor: pointer;
 }
 .btn-logout { background: rgba(255,255,255,0.15); border: none; color: white; padding: 5px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; font-family: inherit; }
 
-/* 직원 관리 모달 */
+/* 모달 공통 */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.5);
   z-index: 998; display: flex; align-items: center; justify-content: center;
@@ -224,20 +239,47 @@ input[type="number"] { text-align: right; }
 .modal-overlay.hidden { display: none; }
 .modal-box {
   background: white; border-radius: 16px; padding: 24px; width: 360px; max-width: 92vw;
-  max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  max-height: 82vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
 .modal-box h3 { font-size: 15px; font-weight: 700; color: #1a5276; margin-bottom: 16px; }
 .emp-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border: 1px solid #edf2f7; border-radius: 8px; margin-bottom: 6px; }
 .emp-row .emp-info { font-size: 13px; }
-.emp-row .emp-part { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; margin-left: 8px; }
-.part-환경 { background: #e8f8f5; color: #1e8449; }
-.part-기계 { background: #fef9e7; color: #b7950b; }
-.part-전기 { background: #eaf2fb; color: #1a5276; }
 .add-emp-row { display: flex; gap: 8px; margin-top: 14px; }
 .add-emp-row input { flex: 1; padding: 8px 10px; border: 1.5px solid #dde4ed; border-radius: 8px; font-size: 13px; font-family: inherit; }
-.add-emp-row select { padding: 8px 10px; border: 1.5px solid #dde4ed; border-radius: 8px; font-size: 13px; font-family: inherit; background: white; }
 .add-emp-row button { padding: 8px 14px; background: #1a5276; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; }
 .modal-close { width: 100%; margin-top: 14px; padding: 10px; background: #eaf2fb; color: #1a5276; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.company-chip { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border: 1px solid #edf2f7; border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
+.company-chip button { border: none; background: none; color: #c0392b; cursor: pointer; font-size: 13px; }
+.company-chip-fixed { color: #7f8c8d; background: #f8f9fa; }
+
+/* 처리장 선택 모달 */
+.fac-region-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.fac-region-row select { flex: 1; }
+.fac-group-title { font-size: 12px; font-weight: 700; color: #1a5276; margin: 10px 0 6px; }
+.fac-all-row { background: #f0f7ff; border: 1.5px solid #bdd6f0; }
+.fac-summary { font-size: 12px; color: #eaf2fb; opacity: 0.95; margin-top: 2px; }
+
+/* 공정 아코디언 */
+.group-block { margin-bottom: 14px; }
+.group-block:last-child { margin-bottom: 0; }
+.group-block-title { font-size: 12px; font-weight: 700; color: #1a5276; background: #eaf2fb; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; }
+.proc-block { border: 1.5px solid #edf2f7; border-radius: 8px; margin-bottom: 7px; overflow: hidden; }
+.proc-header {
+  padding: 9px 12px; background: #fafbfc; font-size: 13px; font-weight: 600; color: #2c3e50;
+  cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none;
+}
+.proc-header:after { content: '▾'; color: #95a5a6; transition: transform 0.2s; }
+.proc-block.open .proc-header:after { transform: rotate(180deg); }
+.proc-header .proc-count { font-size: 11px; color: #2980b9; font-weight: 700; }
+.proc-body { display: none; padding: 8px; gap: 6px; flex-direction: column; }
+.proc-block.open .proc-body { display: flex; }
+
+/* OCR 배너 & 사진 버튼 */
+.ocr-banner {
+  background: #fff3cd; border: 1.5px solid #f5c451; color: #7a5b00; border-radius: 8px;
+  padding: 8px 12px; font-size: 12px; margin-bottom: 10px; display: none; align-items: center; gap: 8px;
+}
+.ocr-banner.show { display: flex; }
 
 /* 파트 정보 — 화면엔 보이지만 인쇄 시 숨김 */
 .print-hidden { }
@@ -250,6 +292,7 @@ input[type="number"] { text-align: right; }
   .report-box { box-shadow: none; border-radius: 0; padding: 10px; }
   .card { box-shadow: none; }
   .print-hidden { display: none !important; }
+  .report-cover { page-break-after: always; border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 }
 </style>
 </head>
@@ -260,13 +303,12 @@ input[type="number"] { text-align: right; }
   <div class="login-box">
     <div class="login-logo">
       <div style="font-size:36px;">🏭</div>
-      <h2>수처리 운영 관리 시스템</h2>
-      <p>횡성군 우항 공공하수처리시설</p>
+      <h2>수처리 운영 관리 시스템 <span style="color:#2980b9;">v2</span></h2>
+      <p>다중 처리장 · 공정별 점검 · 사진 자동입력 (데모)</p>
     </div>
     <select id="login-select" class="login-name-select" onchange="onLoginSelectChange()">
       <option value="">-- 이름을 선택하세요 --</option>
     </select>
-    <div class="login-part-badge" id="login-part-badge">이름을 선택하면 담당 파트가 표시됩니다</div>
     <button class="btn-login" id="btn-do-login" disabled onclick="doLogin()">입력 시작하기</button>
     <button class="btn-emp-manage" onclick="showEmpModal()">⚙️ 직원 명단 관리</button>
   </div>
@@ -279,21 +321,50 @@ input[type="number"] { text-align: right; }
     <div id="emp-admin-list"></div>
     <div class="add-emp-row">
       <input id="new-emp-name" placeholder="이름" maxlength="10">
-      <select id="new-emp-part">
-        <option value="환경">환경</option>
-        <option value="기계">기계</option>
-        <option value="전기">전기</option>
-      </select>
       <button onclick="addEmployee()">추가</button>
     </div>
     <button class="modal-close" onclick="closeEmpModal()">닫기</button>
   </div>
 </div>
 
+<!-- 처리장 선택 모달 -->
+<div id="facility-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="width:420px;">
+    <h3>🗺️ 담당 처리장 선택</h3>
+    <div class="fac-region-row">
+      <select id="fac-region"><option>강원도</option></select>
+      <select id="fac-city">
+        <option value="횡성군">횡성군</option>
+        <option value="삼척시" disabled>삼척시 (준비중)</option>
+        <option value="원주시" disabled>원주시 (준비중)</option>
+        <option value="기타지역" disabled>기타 지역 (준비중)</option>
+      </select>
+    </div>
+    <div class="check-item fac-all-row" onclick="toggleAllSites()">
+      <input type="checkbox" id="fac-all"><span>전체 통합 선택 (모든 처리장)</span>
+    </div>
+    <div id="fac-site-list" class="mt-3"></div>
+    <button class="btn-login mt-3" onclick="confirmFacilitySelection()">선택 완료</button>
+  </div>
+</div>
+
+<div id="company-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="width:380px;">
+    <h3>📋 표지 회사명 설정</h3>
+    <p style="font-size:11px;color:#7f8c8d;margin:-10px 0 12px;">사업장마다 협력사 구성이 다를 수 있어 보고서 표지에 들어갈 회사명을 자유롭게 추가·삭제할 수 있습니다. (㈜ 에코이에스는 공통 고정 표기)</p>
+    <div id="company-chip-list"></div>
+    <div class="add-emp-row">
+      <input type="text" id="company-name-input" placeholder="예: 횡성군, ㈜ 동성환경엔지니어링">
+      <button type="button" onclick="addCompanyChip()">추가</button>
+    </div>
+    <button class="modal-close" onclick="closeCompanyModalAndRefresh()">적용하고 닫기</button>
+  </div>
+</div>
+
 <div class="app-header">
   <div>
-    <h1>🏭 수처리 운영 관리 시스템</h1>
-    <p>횡성군 우항 공공하수처리시설</p>
+    <h1>🏭 수처리 운영 관리 시스템 v2</h1>
+    <p>강원도 횡성군 (데모)</p>
   </div>
   <div id="header-right" class="user-chip">
     <div class="header-date" id="header-date"></div>
@@ -323,14 +394,6 @@ input[type="number"] { text-align: right; }
         <div class="form-group">
           <label class="field-label">작성자</label>
           <input type="text" id="i-writer" placeholder="이름">
-        </div>
-      </div>
-      <div style="margin-bottom:10px;">
-        <span class="section-label">담당 파트</span>
-        <div class="btn-group" id="part-group">
-          <button class="btn-option selected" onclick="switchPart('환경', this)">🌊 환경</button>
-          <button class="btn-option" onclick="switchPart('기계', this)">⚙️ 기계</button>
-          <button class="btn-option" onclick="switchPart('전기', this)">⚡ 전기</button>
         </div>
       </div>
       <div class="form-row">
@@ -365,50 +428,32 @@ input[type="number"] { text-align: right; }
     </div>
   </div>
 
-  <!-- 우항 처리장 일일업무 -->
+  <!-- 담당 처리장 -->
   <div class="card">
-    <div class="card-header">🏗️ 우항 처리장 <span class="badge">안흥·강림·전재·상안·성산·지구</span></div>
+    <div class="card-header">🏭 오늘 담당 처리장
+      <button class="btn-icon on-dark" onclick="openFacilityModal()">변경</button>
+    </div>
     <div class="card-body">
-      <span class="section-label">오늘 방문 처리장</span>
-      <div class="btn-group" id="uang-sites">
-        <button class="btn-option" onclick="this.classList.toggle('selected')">안흥</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">강림</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">전재</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">상안</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">성산</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">지구</button>
-      </div>
-      <div class="divider"></div>
-      <span class="section-label">수행 업무</span>
-      <div class="checklist" id="uang-tasks"></div>
-      <div class="mt-3">
-        <label class="field-label">특이사항</label>
-        <textarea id="uang-note" placeholder="예: 상안 처리장 - 유입펌프 이상음 발생, 점검 후 조치 완료"></textarea>
-      </div>
+      <div id="site-summary" style="font-size:13px;color:#1a5276;font-weight:600;">선택된 처리장이 없습니다.</div>
     </div>
   </div>
 
-  <!-- 소규모 처리장 -->
+  <!-- 공정별 수행업무 -->
   <div class="card">
-    <div class="card-header">🏘️ 소규모 처리장 <span class="badge">갑천·청일·봉덕·수백·대관대·구방·삼원수·두곡</span></div>
+    <div class="card-header">📝 공정별 수행업무 점검 <span class="badge">공정 선택 → 세부 점검유형 선택</span></div>
     <div class="card-body">
-      <span class="section-label">오늘 방문 처리장</span>
-      <div class="btn-group" id="small-sites">
-        <button class="btn-option" onclick="this.classList.toggle('selected')">갑천</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">청일</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">봉덕</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">수백</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">대관대</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">구방</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">삼원수</button>
-        <button class="btn-option" onclick="this.classList.toggle('selected')">두곡</button>
-      </div>
-      <div class="divider"></div>
-      <span class="section-label">수행 업무</span>
-      <div class="checklist" id="small-tasks"></div>
+      <div id="process-accordion"><p class="sub-label">처리장을 먼저 선택하세요.</p></div>
       <div class="mt-3">
         <label class="field-label">특이사항</label>
-        <textarea id="small-note" placeholder="예: 수백, 대관대 처리장 - 동파 방지 열선 철거 완료"></textarea>
+        <textarea id="o-special" placeholder="이상 발생 내용, 조치 사항 등"></textarea>
+      </div>
+      <div class="mt-3">
+        <label class="field-label">명일 예정 업무</label>
+        <textarea id="o-tomorrow" placeholder="내일 수행 예정 업무"></textarea>
+      </div>
+      <div class="mt-3">
+        <label class="field-label">건의사항</label>
+        <textarea id="o-suggestion" placeholder="예: 횡성 침사동 에어 솔레노이드 밸브 교체 예산 요청"></textarea>
       </div>
     </div>
   </div>
@@ -437,8 +482,11 @@ input[type="number"] { text-align: right; }
 
   <!-- 반응조 -->
   <div class="card">
-    <div class="card-header">⚗️ 반응조 계통 운전현황</div>
+    <div class="card-header">⚗️ 반응조 계통 운전현황
+      <button class="btn-icon on-dark" onclick="pickPhoto('reactor')">📷 사진으로 자동입력</button>
+    </div>
     <div class="card-body">
+      <div id="ocr-banner-reactor" class="ocr-banner">🤖 AI가 사진에서 값을 읽어 채웠습니다. 확인 후 저장하세요.</div>
       <p class="sub-label">기존 SBR</p>
       <div class="table-scroll">
         <table class="data-table compact" style="min-width:360px;margin-bottom:12px;">
@@ -535,8 +583,11 @@ input[type="number"] { text-align: right; }
 
   <!-- 방류수 수질 분석 결과 -->
   <div class="card">
-    <div class="card-header">🔬 방류수 수질 분석 결과 <span class="badge">측정 날짜에 입력</span></div>
+    <div class="card-header">🔬 방류수 수질 분석 결과 <span class="badge">측정 날짜에 입력</span>
+      <button class="btn-icon on-dark" onclick="pickPhoto('wq')">📷 사진으로 자동입력</button>
+    </div>
     <div class="card-body">
+      <div id="ocr-banner-wq" class="ocr-banner">🤖 AI가 사진에서 값을 읽어 채웠습니다. 확인 후 저장하세요.</div>
       <div class="table-scroll">
         <table class="data-table compact" style="min-width:400px;">
           <thead>
@@ -550,36 +601,6 @@ input[type="number"] { text-align: right; }
         </table>
       </div>
       <p style="font-size:11px;color:#95a5a6;margin-top:6px;">※ 미측정일은 빈 칸으로 두세요. 주간보고서 수질현황에 자동 반영됩니다.</p>
-    </div>
-  </div>
-
-  <!-- 업무 체크 -->
-  <div class="card">
-    <div class="card-header">📝 금일 업무 및 특이사항</div>
-    <div class="card-body">
-      <span class="section-label">수행 업무 체크</span>
-      <div class="checklist" id="ops-tasks">
-        <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>협잡물 종합 제거기 동작상태 점검 (Auto-Bar 스크린)</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>유입공정 - 유입펌프 및 반응조 유입밸브 동작상태 점검</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>혐기공정 - DO Check 및 설정Hz, 가동시간에 의한 교반상태 점검</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>호기공정 - 산소공급상태 점검</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>무산소공정 - DO 변화 값 점검</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>배출공정 - Decanter 동작상태 점검</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>총인설비 / 슬러지 / 용수공급설비 / TMS설비 기기별 운전상태 점검</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>중계펌프장 가동상태 점검</span></div>
-      </div>
-      <div class="mt-3">
-        <label class="field-label">특이사항</label>
-        <textarea id="o-special" placeholder="이상 발생 내용, 조치 사항 등"></textarea>
-      </div>
-      <div class="mt-3">
-        <label class="field-label">명일 예정 업무</label>
-        <textarea id="o-tomorrow" placeholder="내일 수행 예정 업무"></textarea>
-      </div>
-      <div class="mt-3">
-        <label class="field-label">건의사항</label>
-        <textarea id="o-suggestion" placeholder="예: 횡성 침사동 에어 솔레노이드 밸브 교체 예산 요청"></textarea>
-      </div>
     </div>
   </div>
 
@@ -598,12 +619,23 @@ input[type="number"] { text-align: right; }
 <!-- ==================== TAB 3: 일일업무일지 출력 ==================== -->
 <div id="tab-daily-rpt" class="tab-content">
   <div class="selector-card no-print">
-    <label>출력할 날짜 선택</label>
+    <label>출력할 날짜 · 부서 선택</label>
     <div class="selector-row">
       <select id="sel-daily-date"><option value="">-- 날짜 선택 --</option></select>
+      <select id="sel-daily-dept" onchange="renderDailyReport()">
+        <option value="env">환경용 (4열)</option>
+        <option value="mech">기계·전기용 (3열)</option>
+      </select>
       <button class="btn-primary" style="padding:8px 14px;" onclick="renderDailyReport()">조회</button>
     </div>
   </div>
+  <div class="report-actions no-print">
+    <button class="btn-icon" onclick="toggleReportEdit('daily')">✏️ 편집</button>
+    <button class="btn-icon" onclick="saveReportOverride('daily')">💾 편집내용 저장</button>
+    <button class="btn-icon" onclick="regenerateReport('daily')">🔄 다시 생성</button>
+    <button class="btn-icon" onclick="exportReportWord('daily')">📝 워드로 저장</button>
+  </div>
+  <p class="report-hint no-print">※ 환경용은 실시사항·예정사항 4열, 기계·전기용은 예정사항만 있는 3열 원본 서식입니다. 편집 후 반드시 "편집내용 저장"을 눌러야 유지됩니다. 워드(.doc)는 한글에서도 열리며, 필요시 한글에서 "다른 이름으로 저장 &gt; hwp"로 변환할 수 있습니다.</p>
   <div id="daily-report-area"><div class="no-data">날짜를 선택하면 보고서가 표시됩니다.</div></div>
   <div class="action-bar no-print">
     <button class="btn-secondary" onclick="printReport('daily-rpt')">🖨️ 인쇄</button>
@@ -613,12 +645,20 @@ input[type="number"] { text-align: right; }
 <!-- ==================== TAB 4: 종합운영일지 출력 ==================== -->
 <div id="tab-ops-rpt" class="tab-content">
   <div class="selector-card no-print">
-    <label>출력할 날짜 선택</label>
+    <label>출력할 월 선택</label>
     <div class="selector-row">
-      <select id="sel-ops-date"><option value="">-- 날짜 선택 --</option></select>
+      <select id="sel-ops-month"><option value="">-- 월 선택 --</option></select>
       <button class="btn-primary" style="padding:8px 14px;" onclick="renderOpsReport()">조회</button>
     </div>
   </div>
+  <div class="report-actions no-print">
+    <button class="btn-icon" onclick="toggleReportEdit('ops')">✏️ 편집</button>
+    <button class="btn-icon" onclick="saveReportOverride('ops')">💾 편집내용 저장</button>
+    <button class="btn-icon" onclick="regenerateReport('ops')">🔄 다시 생성</button>
+    <button class="btn-icon" onclick="exportReportWord('ops')">📝 워드로 저장</button>
+    <button class="btn-icon" onclick="exportOpsExcel()">📥 종합운영일지 엑셀 다운로드 (전체)</button>
+  </div>
+  <p class="report-hint no-print">※ 선택한 월에 저장된 모든 날짜의 데이터가 하루씩 이어지는 형태로 모아서 표시됩니다. 엑셀 다운로드는 현재까지 저장된 모든 날짜의 데이터를 날짜별 블록으로 모아 하나의 엑셀 파일로 만듭니다.</p>
   <div id="ops-report-area"><div class="no-data">날짜를 선택하면 보고서가 표시됩니다.</div></div>
   <div class="action-bar no-print">
     <button class="btn-secondary" onclick="printReport('ops-rpt')">🖨️ 인쇄</button>
@@ -634,6 +674,14 @@ input[type="number"] { text-align: right; }
       <button class="btn-primary" style="padding:8px 14px;" onclick="renderWeeklyReport()">조회</button>
     </div>
   </div>
+  <div class="report-actions no-print">
+    <button class="btn-icon" onclick="toggleReportEdit('weekly')">✏️ 편집</button>
+    <button class="btn-icon" onclick="saveReportOverride('weekly')">💾 편집내용 저장</button>
+    <button class="btn-icon" onclick="regenerateReport('weekly')">🔄 다시 생성</button>
+    <button class="btn-icon" onclick="exportReportWord('weekly')">📝 워드로 저장</button>
+    <button class="btn-icon" onclick="openCompanyModal()">📋 표지 회사명 설정</button>
+  </div>
+  <p class="report-hint no-print">※ Ⅲ·Ⅳ 항목은 그 주에 체크한 공정 점검 내용을 자동 요약한 초안입니다. 필요하면 "편집"으로 직접 다듬으세요.</p>
   <div id="weekly-report-area"><div class="no-data">주간을 선택하면 보고서가 표시됩니다.</div></div>
   <div class="action-bar no-print">
     <button class="btn-secondary" onclick="printReport('weekly-rpt')">🖨️ 인쇄</button>
@@ -649,21 +697,78 @@ input[type="number"] { text-align: right; }
       <button class="btn-primary" style="padding:8px 14px;" onclick="renderMonthlyReport()">조회</button>
     </div>
   </div>
+  <div class="report-actions no-print">
+    <button class="btn-icon" onclick="toggleReportEdit('monthly')">✏️ 편집</button>
+    <button class="btn-icon" onclick="saveReportOverride('monthly')">💾 편집내용 저장</button>
+    <button class="btn-icon" onclick="regenerateReport('monthly')">🔄 다시 생성</button>
+    <button class="btn-icon" onclick="exportReportWord('monthly')">📝 워드로 저장</button>
+    <button class="btn-icon" onclick="openCompanyModal()">📋 표지 회사명 설정</button>
+  </div>
   <div id="monthly-report-area"><div class="no-data">월을 선택하면 보고서가 표시됩니다.</div></div>
   <div class="action-bar no-print">
     <button class="btn-secondary" onclick="printReport('monthly-rpt')">🖨️ 인쇄</button>
   </div>
 </div>
 
+<input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoFile(event)">
 <div class="toast" id="toast"></div>
 
-<script>
-// ==================== 세션 & 직원 관리 ====================
-const SESSION_KEY  = 'wt_session';
-const EMPLOYEES_KEY = 'wt_employees';
+<!-- 종합운영일지 엑셀 다운로드용 (스타일 있는 xlsx 생성에는 무료 SheetJS로는 부족해 ExcelJS 사용) -->
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4/dist/exceljs.min.js"></script>
 
-const PART_ICON = { 환경: '🌊', 기계: '⚙️', 전기: '⚡' };
-const PART_COLOR = { 환경: '#1e8449', 기계: '#b7950b', 전기: '#1a5276' };
+<script>
+// ==================== 지역 / 처리장 마스터 데이터 ====================
+// 상사 지시가 아직 없어 실데이터는 강원도 횡성군만 채움. 다른 시/군은 UI 껍데기(비활성)만 둠.
+const REGIONS = {
+  강원도: {
+    횡성군: {
+      groups: {
+        우항: {
+          equip: ['scum','inflow','anaerobic','anoxic','aerobic','decant','tp','sludge','water','tms','pump'],
+          sites: ['안흥','강림','전재','상안','성산','지구'],
+        },
+        소규모: {
+          equip: ['inflow','disinfect','sludge','water'],
+          sites: ['갑천','청일','봉덕','수백','대관대','구방','삼원수','두곡'],
+        },
+      },
+    },
+  },
+};
+
+// ==================== 공정 마스터 (우항/소규모 공통, 처리장 보유 설비에 따라 표시만 다름) ====================
+const PROCESS_MASTER = {
+  scum:      { label: '협잡물 제거기', checks: ['가동상태 점검 (Auto-Bar 스크린)'] },
+  inflow:    { label: '유입공정',      checks: ['유입펌프 동작 점검', '유입밸브 동작 점검'] },
+  anaerobic: { label: '혐기공정',      checks: ['DO Check', '설정Hz 확인', '교반상태 점검'] },
+  anoxic:    { label: '무산소공정',    checks: ['DO 변화값 점검'] },
+  aerobic:   { label: '호기공정',      checks: ['산소공급상태 점검'] },
+  decant:    { label: '배출공정',      checks: ['Decanter 동작상태 점검'] },
+  tp:        { label: '총인설비',      checks: ['운전상태 점검', '약품(PAC) 투입량 확인·조정'] },
+  sludge:    { label: '슬러지',        checks: ['인발량 확인 및 기록'] },
+  water:     { label: '용수공급설비',  checks: ['재이용수 사용량 확인'] },
+  tms:       { label: 'TMS설비',       checks: ['기기별 운전상태 점검'] },
+  pump:      { label: '중계펌프장',    checks: ['가동상태 점검'] },
+  disinfect: { label: '소독설비',      checks: ['운전상태 점검'] },
+};
+
+function getAllSites() {
+  const arr = [];
+  Object.values(REGIONS.강원도.횡성군.groups).forEach(g => arr.push(...g.sites));
+  return arr;
+}
+function getGroupOfSite(site) {
+  const groups = REGIONS.강원도.횡성군.groups;
+  return Object.keys(groups).find(g => groups[g].sites.includes(site)) || null;
+}
+function getSelectedGroups(sites) {
+  const groups = REGIONS.강원도.횡성군.groups;
+  return Object.keys(groups).filter(g => groups[g].sites.some(s => (sites||[]).includes(s)));
+}
+
+// ==================== 세션 & 직원 관리 ====================
+const SESSION_KEY  = 'wt2_session';
+const EMPLOYEES_KEY = 'wt2_employees';
 
 function getSession() { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
 function setSession(u) { localStorage.setItem(SESSION_KEY, JSON.stringify(u)); }
@@ -674,69 +779,59 @@ function setEmployees(arr) { localStorage.setItem(EMPLOYEES_KEY, JSON.stringify(
 
 function initDefaultEmployees() {
   if (getEmployees().length === 0) {
-    setEmployees([
-      { name: '홍길동', part: '환경' },
-      { name: '김철수', part: '기계' },
-      { name: '이영희', part: '전기' },
-    ]);
+    setEmployees(['홍길동', '김철수', '이영희']);
   }
 }
 
-// 로그인 화면 셀렉트 채우기
 function populateLoginSelect() {
   const sel = document.getElementById('login-select');
   const emps = getEmployees();
   sel.innerHTML = '<option value="">-- 이름을 선택하세요 --</option>' +
-    emps.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+    emps.map(name => `<option value="${name}">${name}</option>`).join('');
 }
 
 function onLoginSelectChange() {
   const name = document.getElementById('login-select').value;
-  const emps = getEmployees();
-  const emp = emps.find(e => e.name === name);
-  const badge = document.getElementById('login-part-badge');
-  const btn   = document.getElementById('btn-do-login');
-  if (emp) {
-    badge.textContent = `${PART_ICON[emp.part] || ''} ${emp.part} 담당`;
-    badge.style.color = PART_COLOR[emp.part] || '#1a5276';
-    btn.disabled = false;
-  } else {
-    badge.textContent = '이름을 선택하면 담당 파트가 표시됩니다';
-    badge.style.color = '';
-    btn.disabled = true;
-  }
+  document.getElementById('btn-do-login').disabled = !name;
 }
 
 function doLogin() {
   const name = document.getElementById('login-select').value;
-  const emp  = getEmployees().find(e => e.name === name);
-  if (!emp) return;
-  setSession(emp);
-  applySession(emp);
+  if (!name) return;
+  const session = { name, sites: [] };
+  setSession(session);
   document.getElementById('login-overlay').classList.add('hidden');
+  applySession(session);
+  openFacilityModal(); // 로그인 직후 바로 처리장 선택 화면
 }
 
-function applySession(emp) {
-  currentPart = emp.part;
-  // 헤더 업데이트
+function applySession(session) {
+  const writerEl = document.getElementById('i-writer');
+  if (writerEl && !writerEl.value) writerEl.value = session.name;
+  updateHeaderChip(session);
+  renderSiteSummary(session);
+  renderProcessAccordion(session.sites || []);
+}
+
+function updateHeaderChip(session) {
+  const sitesLabel = summarizeSites(session.sites || []);
   document.getElementById('header-right').innerHTML = `
-    <span class="part-tag">${PART_ICON[emp.part] || ''} ${emp.part}</span>
-    <span class="name">${emp.name}</span>
+    <span class="fac-tag" title="변경" onclick="openFacilityModal()">🏭 ${sitesLabel}</span>
+    <span class="name">${session.name}</span>
     <button class="btn-logout" onclick="logout()">로그아웃</button>
   `;
-  // 파트 버튼 동기화 (화면용)
-  document.querySelectorAll('#part-group .btn-option').forEach(b => {
-    b.classList.toggle('selected', b.textContent.trim().includes(emp.part));
-  });
-  // 작성자 필드 자동 입력
-  const writerEl = document.getElementById('i-writer');
-  if (writerEl && !writerEl.value) writerEl.value = emp.name;
-  // 체크리스트 렌더
-  renderPartChecklists(emp.part);
+}
+
+function summarizeSites(sites) {
+  if (!sites || !sites.length) return '처리장 미선택';
+  const all = getAllSites();
+  if (sites.length === all.length) return '전체 통합';
+  if (sites.length <= 2) return sites.join(', ');
+  return `${sites[0]} 외 ${sites.length - 1}곳`;
 }
 
 function logout() {
-  if (!confirm(`로그아웃 하시겠습니까?`)) return;
+  if (!confirm('로그아웃 하시겠습니까?')) return;
   clearSession();
   document.getElementById('login-overlay').classList.remove('hidden');
   document.getElementById('header-right').innerHTML = `<div class="header-date" id="header-date">${new Date().toISOString().slice(0,10).replace(/-/g,'.')}</div>`;
@@ -755,139 +850,159 @@ function closeEmpModal() {
   document.getElementById('emp-modal').classList.add('hidden');
   populateLoginSelect();
 }
-
 function renderEmpAdminList() {
   const emps = getEmployees();
-  const el   = document.getElementById('emp-admin-list');
+  const el = document.getElementById('emp-admin-list');
   if (!emps.length) { el.innerHTML = '<p style="color:#95a5a6;font-size:13px;text-align:center;padding:10px;">등록된 직원이 없습니다.</p>'; return; }
-  el.innerHTML = emps.map((e, i) => `
+  el.innerHTML = emps.map((name, i) => `
     <div class="emp-row">
-      <div class="emp-info">
-        <strong>${e.name}</strong>
-        <span class="emp-part part-${e.part}">${PART_ICON[e.part] || ''} ${e.part}</span>
-      </div>
+      <div class="emp-info"><strong>${name}</strong></div>
       <button class="btn-icon danger" onclick="deleteEmployee(${i})">삭제</button>
     </div>
   `).join('');
 }
-
 function addEmployee() {
   const name = document.getElementById('new-emp-name').value.trim();
-  const part = document.getElementById('new-emp-part').value;
   if (!name) { alert('이름을 입력하세요.'); return; }
   const emps = getEmployees();
-  if (emps.find(e => e.name === name)) { alert('이미 등록된 이름입니다.'); return; }
-  emps.push({ name, part });
+  if (emps.includes(name)) { alert('이미 등록된 이름입니다.'); return; }
+  emps.push(name);
   setEmployees(emps);
   document.getElementById('new-emp-name').value = '';
   renderEmpAdminList();
 }
-
 function deleteEmployee(i) {
   const emps = getEmployees();
-  if (!confirm(`"${emps[i].name}" 직원을 삭제할까요?`)) return;
+  if (!confirm(`"${emps[i]}" 직원을 삭제할까요?`)) return;
   emps.splice(i, 1);
   setEmployees(emps);
   renderEmpAdminList();
 }
 
-// ==================== 파트별 업무 정의 ====================
-const PART_TASKS = {
-  환경: {
-    uang: [
-      '일일 방류량 대비 유입량 순시값(㎥/h) 확인 및 공정 설비 점검',
-      '반응조 공정별 운전상태 점검 (유입/혐기/호기/무산소/배출)',
-      '총인설비 운전상태 점검 및 약품(PAC) 투입량 확인·조정',
-      'TMS설비 기기별 운전상태 점검',
-      '슬러지 인발량 확인 및 기록',
-      '방류수 수질 확인 (DO, 탁도 등)',
-      '재이용수 사용량 확인 및 기록',
-      '처리장 내부 물청소 작업',
-    ],
-    small: [
-      '공정 설비 전반 점검',
-      '유입량 확인 및 순시',
-      '소독 설비 점검',
-      '방류수 수질 확인',
-      '약품 잔량 확인',
-    ],
-  },
-  기계: {
-    uang: [
-      '유량조정조 수중 펌프 동작 확인 (수위계 대비 동작 여부)',
-      '협잡물 종합 제거기(Auto-Bar 스크린) 동작상태 점검',
-      '블로워(송풍기) 운전상태 점검',
-      '잉여슬러지 인발 펌프 동작 확인',
-      '슬러지 탈수기 운전상태 점검',
-      '중계펌프장 가동상태 점검',
-      '각종 밸브류 동작상태 점검',
-      '동파 방지 열선 / 라디에이터 철거 작업',
-    ],
-    small: [
-      '수중 펌프 동작 확인',
-      '공정 설비 전반 점검 (기계)',
-      '각종 배관 및 밸브류 점검',
-      '에어레이터 동작 확인',
-      '동파 방지 열선 / 라디에이터 철거 작업',
-    ],
-  },
-  전기: {
-    uang: [
-      '주 제어반 운전상태 점검',
-      '전력 사용량 기록 및 확인',
-      '각종 전동기(모터) 운전전류 측정',
-      'TMS(원격감시) 계측기 작동 확인',
-      '수위계 / 유량계 계측값 확인',
-      '소화설비 및 전기 안전설비 점검',
-      '비상발전기 점검 (해당 시)',
-      'CCTV 및 보안 설비 확인',
-    ],
-    small: [
-      '제어반 운전상태 점검',
-      '전동기 운전전류 확인',
-      '계측기 작동 확인',
-      '전기 안전설비 점검',
-    ],
-  },
-};
-
-let currentPart = '환경';
-
-function switchPart(part, btn) {
-  const session = getSession();
-  if (session) {
-    showToast('로그인된 계정의 파트는 변경할 수 없습니다.', true);
-    return;
-  }
-  currentPart = part;
-  document.querySelectorAll('#part-group .btn-option').forEach(b => b.classList.remove('selected'));
-  if (btn) btn.classList.add('selected');
-  renderPartChecklists(part);
+// ==================== 처리장 선택 모달 ====================
+function openFacilityModal() {
+  renderFacilitySiteList();
+  document.getElementById('facility-modal').classList.remove('hidden');
+}
+function closeFacilityModal() {
+  document.getElementById('facility-modal').classList.add('hidden');
 }
 
-function renderPartChecklists(part, checkedUang = [], checkedSmall = []) {
-  const tasks = PART_TASKS[part] || PART_TASKS['환경'];
-  const makeItems = (list, checked) =>
-    list.map(t => {
-      const on = checked.includes(t);
-      return `<div class="check-item${on ? ' checked' : ''}" onclick="toggleCheck(this)"><input type="checkbox"${on ? ' checked' : ''}><span>${t}</span></div>`;
+function renderFacilitySiteList() {
+  const session = getSession() || { sites: [] };
+  const groups = REGIONS.강원도.횡성군.groups;
+  const el = document.getElementById('fac-site-list');
+  el.innerHTML = Object.entries(groups).map(([gName, g]) => `
+    <div class="fac-group-title">${gName} 그룹</div>
+    <div class="btn-group">
+      ${g.sites.map(site => `
+        <button type="button" class="btn-option fac-site-btn${(session.sites||[]).includes(site) ? ' selected' : ''}" data-site="${site}"
+          onclick="this.classList.toggle('selected'); syncFacAllCheckbox();">${site}</button>
+      `).join('')}
+    </div>
+  `).join('');
+  syncFacAllCheckbox();
+}
+
+function syncFacAllCheckbox() {
+  const total = getAllSites().length;
+  const selected = document.querySelectorAll('#fac-site-list .fac-site-btn.selected').length;
+  document.getElementById('fac-all').checked = total > 0 && selected === total;
+}
+
+function toggleAllSites() {
+  const checkbox = document.getElementById('fac-all');
+  const willSelectAll = !checkbox.checked;
+  document.querySelectorAll('#fac-site-list .fac-site-btn').forEach(b => b.classList.toggle('selected', willSelectAll));
+  checkbox.checked = willSelectAll;
+}
+
+function confirmFacilitySelection() {
+  const sites = Array.from(document.querySelectorAll('#fac-site-list .fac-site-btn.selected')).map(b => b.dataset.site);
+  if (!sites.length) { showToast('처리장을 1곳 이상 선택하세요.', true); return; }
+  const session = getSession() || {};
+  session.sites = sites;
+  setSession(session);
+  closeFacilityModal();
+  updateHeaderChip(session);
+  renderSiteSummary(session);
+  renderProcessAccordion(sites);
+  showToast(`🏭 ${summarizeSites(sites)} 선택 완료`);
+}
+
+function renderSiteSummary(session) {
+  const el = document.getElementById('site-summary');
+  const sites = session.sites || [];
+  if (!sites.length) { el.textContent = '선택된 처리장이 없습니다. "변경" 버튼을 눌러 선택하세요.'; return; }
+  const groups = getSelectedGroups(sites);
+  el.innerHTML = `${summarizeSites(sites)} <span style="color:#7f8c8d;font-weight:400;">(${groups.join(', ')} 그룹)</span>`;
+}
+
+// ==================== 공정별 수행업무 아코디언 ====================
+function renderProcessAccordion(sites) {
+  const container = document.getElementById('process-accordion');
+  const groups = getSelectedGroups(sites);
+  if (!groups.length) { container.innerHTML = '<p class="sub-label">처리장을 먼저 선택하세요.</p>'; return; }
+
+  container.innerHTML = groups.map(gName => {
+    const equip = REGIONS.강원도.횡성군.groups[gName].equip;
+    const procsHtml = equip.map(procKey => {
+      const proc = PROCESS_MASTER[procKey];
+      if (!proc) return '';
+      const checksHtml = proc.checks.map(c => `
+        <div class="check-item" onclick="toggleCheck(this)" data-group="${gName}" data-proc="${procKey}">
+          <input type="checkbox"><span>${c}</span>
+        </div>`).join('');
+      return `
+        <div class="proc-block">
+          <div class="proc-header" onclick="toggleProcBlock(this)">${proc.label}</div>
+          <div class="proc-body">${checksHtml}</div>
+        </div>`;
     }).join('');
-  document.getElementById('uang-tasks').innerHTML = makeItems(tasks.uang, checkedUang);
-  document.getElementById('small-tasks').innerHTML = makeItems(tasks.small, checkedSmall);
+    return `<div class="group-block"><div class="group-block-title">${gName} 그룹</div>${procsHtml}</div>`;
+  }).join('');
+}
+
+function toggleProcBlock(headerEl) {
+  headerEl.parentElement.classList.toggle('open');
+}
+
+function readProcessTasks() {
+  const result = {};
+  document.querySelectorAll('#process-accordion .check-item.checked').forEach(el => {
+    const g = el.dataset.group;
+    const procKey = el.dataset.proc;
+    const proc = PROCESS_MASTER[procKey];
+    if (!proc) return;
+    const checkLabel = el.querySelector('span').textContent.trim();
+    result[g] = result[g] || [];
+    result[g].push(`${proc.label} - ${checkLabel}`);
+  });
+  return result;
+}
+
+function restoreProcessTasks(procTasks) {
+  if (!procTasks) return;
+  document.querySelectorAll('#process-accordion .check-item').forEach(el => {
+    const g = el.dataset.group;
+    const procKey = el.dataset.proc;
+    const proc = PROCESS_MASTER[procKey];
+    if (!proc) return;
+    const checkLabel = el.querySelector('span').textContent.trim();
+    const flat = `${proc.label} - ${checkLabel}`;
+    const on = (procTasks[g] || []).includes(flat);
+    el.classList.toggle('checked', on);
+    el.querySelector('input').checked = on;
+    if (on) el.closest('.proc-block').classList.add('open');
+  });
 }
 
 // ==================== DATA LAYER ====================
-const DB_KEY = 'wt_ops_db';
+const DB_KEY = 'wt2_ops_db';
 
-function getRecords() {
-  return JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-}
-function setRecords(arr) {
-  localStorage.setItem(DB_KEY, JSON.stringify(arr));
-}
-function getRecord(date) {
-  return getRecords().find(r => r.date === date) || null;
-}
+function getRecords() { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
+function setRecords(arr) { localStorage.setItem(DB_KEY, JSON.stringify(arr)); }
+function getRecord(date) { return getRecords().find(r => r.date === date) || null; }
 function upsertRecord(rec) {
   const arr = getRecords();
   const i = arr.findIndex(r => r.date === rec.date);
@@ -896,9 +1011,7 @@ function upsertRecord(rec) {
   arr.sort((a, b) => a.date.localeCompare(b.date));
   setRecords(arr);
 }
-function deleteRecord(date) {
-  setRecords(getRecords().filter(r => r.date !== date));
-}
+function deleteRecord(date) { setRecords(getRecords().filter(r => r.date !== date)); }
 
 // ==================== HELPERS ====================
 function n(id) {
@@ -911,12 +1024,103 @@ function s(id) {
   const el = document.getElementById(id);
   return el ? el.value.trim() : '';
 }
-function fmt(v, dec=1) {
-  return v == null ? '-' : Number(v).toFixed(dec);
+function fmt(v, dec=1) { return v == null ? '-' : Number(v).toFixed(dec); }
+function fmtDate(d) { return !d ? '' : d.replace(/-/g, '.'); }
+// "2026-03-03" -> "26. 03. 03" (일일업무일지 표지 문구용, 원본 hwp 표기와 동일)
+function fmtDateShort(d) { if (!d) return ''; const [y,m,day] = d.split('-'); return `${y.slice(2)}. ${m}. ${day}`; }
+
+// ==================== 표지 (주간업무보고 · 월간보고서) — 원본 hwp 표지 그대로 재현 ====================
+function reportCoverHtml(orgLine, titleLine, opts) {
+  opts = opts || {};
+  const orgLineHtml = orgLine ? `<div class="cover-org">[${orgLine}]</div>` : '';
+  return `
+    <div class="report-cover">
+      <div class="cover-tables">
+        <table class="cover-doc-table">
+          <tr><td class="k">등록번호</td><td></td></tr>
+          <tr><td class="k">등록일자</td><td>${opts.regDate || ''}</td></tr>
+          <tr><td class="k">결재일자</td><td>${opts.decDate || ''}</td></tr>
+          <tr><td class="k">공개구분</td><td>비공개</td></tr>
+        </table>
+        <table class="cover-doc-table">
+          <tr><th>기 안</th><th>검 토</th><th>결 재</th></tr>
+          <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td class="k" colspan="1">협조자</td><td colspan="2">&nbsp;</td></tr>
+        </table>
+      </div>
+      <div class="cover-bar-gradient"></div>
+      ${orgLineHtml}
+      <div class="cover-title">${titleLine}</div>
+      <div class="cover-bar-solid"></div>
+      ${coverCompanyLinesHtml()}
+    </div>`;
 }
-function fmtDate(d) {
-  if (!d) return '';
-  return d.replace(/-/g, '.');
+function reportChapterHtml(num, title) {
+  return `<div class="report-chapter"><span class="num">${num}</span><span class="ttl">${title}</span></div>`;
+}
+// 월간보고서 표지 — 등록번호/기안 표 없이 제목·발행월·회사명만 있는 원본 구조
+function reportCoverSimpleHtml(orgLine, titleLines, dateLine) {
+  return `
+    <div class="report-cover" style="text-align:center;padding-top:60px;">
+      <div style="font-size:20px;font-weight:700;margin-bottom:100px;">${orgLine}</div>
+      ${titleLines.map(t => `<div style="font-size:30px;font-weight:800;margin-bottom:14px;">${t}</div>`).join('')}
+      <div style="font-size:16px;font-weight:600;margin:14px 0 160px;">${dateLine}</div>
+      <div class="cover-company">횡 성 군</div>
+      ${coverCompanyLinesHtml()}
+    </div>`;
+}
+
+// ==================== 표지 협력사명 설정 (사업장마다 협력사 구성이 달라 편집 가능하게 함) ====================
+// ㈜ 에코이에스는 모든 사업장 공통 고정 표기, 그 외 회사명은 사업장별로 추가·삭제 가능
+const COVER_FIXED_COMPANY = '㈜ 에코이에스';
+function getCoverExtraCompanies() {
+  try {
+    const raw = JSON.parse(localStorage.getItem('coverExtraCompanies'));
+    return Array.isArray(raw) ? raw : ['㈜ 동성환경엔지니어링'];
+  } catch { return ['㈜ 동성환경엔지니어링']; }
+}
+function setCoverExtraCompanies(arr) {
+  localStorage.setItem('coverExtraCompanies', JSON.stringify(arr));
+}
+function coverCompanyLinesHtml() {
+  const companies = [...getCoverExtraCompanies(), COVER_FIXED_COMPANY];
+  return companies.map(c => `<div class="cover-company">${c}</div>`).join('');
+}
+function openCompanyModal() {
+  renderCompanyChipList();
+  document.getElementById('company-modal').classList.remove('hidden');
+}
+function closeCompanyModal() {
+  document.getElementById('company-modal').classList.add('hidden');
+}
+function renderCompanyChipList() {
+  const list = getCoverExtraCompanies();
+  const el = document.getElementById('company-chip-list');
+  el.innerHTML = (list.length ? list : []).map((c, i) => `
+    <div class="company-chip"><span>${c}</span><button type="button" onclick="removeCompanyChip(${i})">✕</button></div>
+  `).join('') + `<div class="company-chip company-chip-fixed"><span>${COVER_FIXED_COMPANY} (고정)</span></div>`;
+}
+function addCompanyChip() {
+  const input = document.getElementById('company-name-input');
+  const name = input.value.trim();
+  if (!name) return;
+  const list = getCoverExtraCompanies();
+  list.push(name);
+  setCoverExtraCompanies(list);
+  input.value = '';
+  renderCompanyChipList();
+}
+function removeCompanyChip(i) {
+  const list = getCoverExtraCompanies();
+  list.splice(i, 1);
+  setCoverExtraCompanies(list);
+  renderCompanyChipList();
+}
+function closeCompanyModalAndRefresh() {
+  closeCompanyModal();
+  if (document.getElementById('tab-weekly-rpt').classList.contains('active')) renderWeeklyReport();
+  if (document.getElementById('tab-monthly-rpt').classList.contains('active')) renderMonthlyReport();
+  showToast('📋 표지 회사명이 적용되었습니다.');
 }
 function toggleCheck(el) {
   el.classList.toggle('checked');
@@ -925,14 +1129,6 @@ function toggleCheck(el) {
 function selectOne(btn, gid) {
   document.querySelectorAll('#' + gid + ' .btn-option').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-}
-function checkedLabels(containerId) {
-  return Array.from(document.querySelectorAll('#' + containerId + ' .check-item.checked span'))
-    .map(el => el.textContent.trim());
-}
-function selectedBtns(containerId) {
-  return Array.from(document.querySelectorAll('#' + containerId + ' .btn-option.selected'))
-    .map(el => el.textContent.trim());
 }
 function showToast(msg, isError) {
   const t = document.getElementById('toast');
@@ -951,33 +1147,30 @@ function switchTab(name, btn) {
   if (tab) tab.classList.add('active');
   if (btn) btn.classList.add('active');
 
-  if (name === 'input') document.getElementById('i-date').value = new Date().toISOString().split('T')[0];
+  if (name === 'input') { document.getElementById('i-date').value = new Date().toISOString().split('T')[0]; autoLoadTodayOnOpen(); }
   if (name === 'records') renderRecordsList();
   if (name === 'daily-rpt') refreshDateSelectors();
-  if (name === 'ops-rpt') refreshDateSelectors();
   if (name === 'weekly-rpt') refreshWeekSelector();
-  if (name === 'monthly-rpt') refreshMonthSelector();
+  if (name === 'monthly-rpt' || name === 'ops-rpt') refreshMonthSelector();
 }
 
-// ==================== READ FORM ====================
+// ==================== READ / FILL FORM ====================
 function readForm() {
+  const session = getSession() || {};
+  const sites = session.sites || [];
   return {
     date: s('i-date'),
     writer: s('i-writer'),
-    part: currentPart,
     duty: s('i-duty'),
     manager: s('i-manager'),
     weather: document.querySelector('#weather-group .btn-option.selected')?.textContent.trim() || '',
     temp_min: n('i-tmin'),
     temp_max: n('i-tmax'),
 
-    uang_sites: selectedBtns('uang-sites'),
-    uang_tasks: checkedLabels('uang-tasks'),
-    uang_note: s('uang-note'),
-
-    small_sites: selectedBtns('small-sites'),
-    small_tasks: checkedLabels('small-tasks'),
-    small_note: s('small-note'),
+    region: '강원도', city: '횡성군',
+    sites: sites,
+    groups: getSelectedGroups(sites),
+    proc_tasks: readProcessTasks(),
 
     flow: {
       s1_in_d: n('f-s1-in-d'), s1_in_a: n('f-s1-in-a'),
@@ -1016,56 +1209,32 @@ function readForm() {
       uh: { bod: n('wq-uh-bod'), toc: n('wq-uh-toc'), ss: n('wq-uh-ss'), tn: n('wq-uh-tn'), tp: n('wq-uh-tp'), col: n('wq-uh-col') },
       dn: { bod: n('wq-dn-bod'), toc: n('wq-dn-toc'), ss: n('wq-dn-ss'), tn: n('wq-dn-tn'), tp: n('wq-dn-tp'), col: n('wq-dn-col') },
     },
-    ops_tasks: checkedLabels('ops-tasks'),
     special: s('o-special'),
     tomorrow: s('o-tomorrow'),
     suggestion: s('o-suggestion'),
   };
 }
 
-// ==================== FILL FORM ====================
 function fillForm(rec) {
   const set = (id, v) => { const el = document.getElementById(id); if (el && v != null && !el.readOnly) el.value = v; };
-  // 날짜는 오늘 고정 — readOnly이므로 set()에서 자동 스킵됨
   set('i-writer', rec.writer); set('i-duty', rec.duty); set('i-manager', rec.manager);
-
-  // 파트 복원
-  if (rec.part) {
-    currentPart = rec.part;
-    document.querySelectorAll('#part-group .btn-option').forEach(b => {
-      b.classList.toggle('selected', b.textContent.trim().includes(rec.part));
-    });
-    renderPartChecklists(rec.part, rec.uang_tasks || [], rec.small_tasks || []);
-  }
   set('i-tmin', rec.temp_min); set('i-tmax', rec.temp_max);
 
-  // weather
   document.querySelectorAll('#weather-group .btn-option').forEach(b => {
     b.classList.toggle('selected', b.textContent.trim() === rec.weather);
   });
 
-  // btn-option groups (multi-select)
-  const setMulti = (containerId, arr) => {
-    document.querySelectorAll('#' + containerId + ' .btn-option').forEach(b => {
-      b.classList.toggle('selected', (arr || []).includes(b.textContent.trim()));
-    });
-  };
-  setMulti('uang-sites', rec.uang_sites);
-  setMulti('small-sites', rec.small_sites);
+  if (rec.sites && rec.sites.length) {
+    const session = getSession() || {};
+    session.sites = rec.sites;
+    setSession(session);
+    updateHeaderChip(session);
+    renderSiteSummary(session);
+    renderProcessAccordion(rec.sites);
+  }
+  restoreProcessTasks(rec.proc_tasks);
 
-  // checklists
-  const setChecks = (containerId, arr) => {
-    document.querySelectorAll('#' + containerId + ' .check-item').forEach(el => {
-      const label = el.querySelector('span').textContent.trim();
-      const on = (arr || []).includes(label);
-      el.classList.toggle('checked', on);
-      el.querySelector('input').checked = on;
-    });
-  };
-  setChecks('ops-tasks', rec.ops_tasks);
-
-  set('uang-note', rec.uang_note); set('small-note', rec.small_note);
-  set('o-special', rec.special); set('o-tomorrow', rec.tomorrow);
+  set('o-special', rec.special); set('o-tomorrow', rec.tomorrow); set('o-suggestion', rec.suggestion);
 
   const f = rec.flow || {};
   ['s1-in-d','s1-in-a','s1-out-d','s1-out-a','s2-in-d','s2-in-a','s2-out-d','s2-out-a','tot-in-d','tot-in-a','tot-out-d','tot-out-a']
@@ -1076,8 +1245,8 @@ function fillForm(rec) {
     Object.entries(data).forEach(([k, v]) => set(prefix + '-' + k.replace(/_/g,'-'), v));
   };
   if (rec.reactor) {
-    ['a','b'].forEach(s => setReactor('r1-' + s, rec.reactor.r1?.[s]));
-    ['a','b'].forEach(s => setReactor('r2-' + s, rec.reactor.r2?.[s]));
+    ['a','b'].forEach(sk => setReactor('r1-' + sk, rec.reactor.r1?.[sk]));
+    ['a','b'].forEach(sk => setReactor('r2-' + sk, rec.reactor.r2?.[sk]));
   }
 
   const sl = rec.sludge || {};
@@ -1099,21 +1268,23 @@ function fillForm(rec) {
     const q = wq[loc] || {};
     ['bod','toc','ss','tn','tp','col'].forEach(m => set(`wq-${loc}-${m}`, q[m]));
   });
-
-  set('o-suggestion', rec.suggestion);
 }
 
 // ==================== GOOGLE SHEETS SYNC ====================
+// report-app.html과 동일한 Apps Script 배포 URL. doPost에 action 분기가 추가되어 있어야 함(google-apps-script.js 참고).
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz3dF9AuiHv_nOGBAc0EGj-BoOT0aN7hkl3gA-wIbFbzWek-eUvmYEkovqY37pmHTO0/exec';
+// google-apps-script.js의 APP_KEY와 반드시 동일해야 함. 유출 의심되면 양쪽을 같이 바꾸고 재배포.
+const APP_KEY = 'hs-uh-2607';
 
-async function syncToSheets(rec) {
+async function syncToSheets(rec, changes) {
   if (!SHEETS_URL) return false;
   try {
+    const base = changes && changes.length ? Object.assign({}, rec, { __changes: changes }) : rec;
+    const payload = Object.assign({}, base, { key: APP_KEY });
     await fetch(SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
+      method: 'POST', mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(rec)
+      body: JSON.stringify(payload)
     });
     return true;
   } catch (e) {
@@ -1122,104 +1293,132 @@ async function syncToSheets(rec) {
   }
 }
 
-async function testSheetsConnection() {
-  const msg = document.getElementById('sheets-status-msg');
-  msg.style.color = '#7f8c8d';
-  msg.innerHTML = '⏳ 연결 확인 중...';
+async function fetchRemoteRecord(date) {
+  if (!SHEETS_URL) return null;
   try {
-    const res = await fetch(SHEETS_URL, { method: 'GET', mode: 'cors' });
-    if (res.ok) {
-      const data = await res.json();
-      msg.style.color = '#27ae60';
-      msg.innerHTML = `✅ 연결 성공! 구글 시트 백엔드가 정상 작동 중입니다.<br><small style="color:#7f8c8d;">${data.message || ''}</small>`;
-    } else {
-      throw new Error('응답 오류 ' + res.status);
-    }
+    const res = await fetch(`${SHEETS_URL}?action=get&date=${encodeURIComponent(date)}&key=${encodeURIComponent(APP_KEY)}`);
+    const data = await res.json();
+    return (data && data.status === 'ok') ? data.record : null;
   } catch (e) {
-    // no-cors 환경에서 GET도 막힐 수 있음 → 대신 POST로 테스트
-    try {
-      await fetch(SHEETS_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ date: '__test__', part: 'TEST', writer: '연결테스트' })
-      });
-      msg.style.color = '#f39c12';
-      msg.innerHTML = `🟡 전송 요청 완료 (응답 확인 불가 — 브라우저 보안 정책)<br>
-        <small style="color:#7f8c8d;">구글 시트를 직접 열어 데이터가 들어왔는지 확인하세요.<br>
-        또는 아래 링크를 클릭해 연결을 확인하세요:</small><br>
-        <a href="${SHEETS_URL}" target="_blank" style="font-size:12px;color:#2980b9;word-break:break-all;">
-          ${SHEETS_URL.slice(0,60)}...</a>`;
-    } catch (e2) {
-      msg.style.color = '#e74c3c';
-      msg.innerHTML = `❌ 연결 실패: ${e2.message}<br><small>URL이나 배포 설정을 확인하세요.</small>`;
-    }
+    return null;
   }
 }
 
-async function syncAllToSheets() {
-  const recs = getRecords();
-  if (!recs.length) { showToast('전송할 데이터가 없습니다.', true); return; }
-  if (!confirm(`저장된 ${recs.length}건 전체를 구글 시트로 전송할까요?`)) return;
-
-  const msg = document.getElementById('sheets-status-msg');
-  msg.style.color = '#7f8c8d';
-  msg.innerHTML = `⏳ 전송 중... (0 / ${recs.length})`;
-
-  let ok = 0;
-  for (let i = 0; i < recs.length; i++) {
-    await syncToSheets(recs[i]);
-    ok++;
-    msg.innerHTML = `⏳ 전송 중... (${ok} / ${recs.length})`;
-    await new Promise(r => setTimeout(r, 300)); // 과부하 방지
+async function logReportOverride(type, reportKey, before, after) {
+  if (!SHEETS_URL) return;
+  try {
+    const writer = getSession()?.name || '';
+    await fetch(SHEETS_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'override_log', reportType: type, key: APP_KEY, reportKey, writer, before, after })
+    });
+  } catch (e) {
+    console.warn('수정이력 전송 실패:', e);
   }
-  msg.style.color = '#27ae60';
-  msg.innerHTML = `✅ ${ok}건 전송 완료! 구글 시트를 확인하세요.`;
-  showToast(`✅ ${ok}건 전송 완료!`);
+}
+
+// ==================== 입력값 변경분 추적 (누가 무엇을 고쳤는지 수정이력 시트에 남기기 위함) ====================
+// 이주임이 오늘치를 입력 → 정대리·박과장이 이어서 열어 검토/수정하는 흐름을 지원.
+// 폼을 불러온 시점의 스냅샷과, 저장 시점의 값을 비교해 바뀐 필드만 골라낸다.
+let editSnapshot = null;
+let editSnapshotDate = null;
+
+function flattenRecord(obj, prefix) {
+  prefix = prefix || '';
+  const out = {};
+  if (obj == null || typeof obj !== 'object') { out[prefix] = obj; return out; }
+  if (Array.isArray(obj)) { out[prefix] = JSON.stringify(obj); return out; }
+  Object.keys(obj).forEach(k => {
+    const path = prefix ? prefix + '.' + k : k;
+    const v = obj[k];
+    if (v && typeof v === 'object') Object.assign(out, flattenRecord(v, path));
+    else out[path] = v;
+  });
+  return out;
+}
+function diffFlatRecords(beforeFlat, afterFlat) {
+  const keys = new Set([...Object.keys(beforeFlat), ...Object.keys(afterFlat)]);
+  const changes = [];
+  keys.forEach(k => {
+    const b = beforeFlat[k] ?? '', a = afterFlat[k] ?? '';
+    if (String(b) !== String(a)) changes.push({ field: k, before: b, after: a });
+  });
+  return changes;
+}
+function setEditSnapshot(rec) {
+  editSnapshot = flattenRecord(rec);
+  editSnapshotDate = rec.date;
 }
 
 // ==================== SAVE / LOAD ====================
 async function saveToday() {
-  // 날짜는 항상 오늘로 고정
   document.getElementById('i-date').value = new Date().toISOString().split('T')[0];
   const rec = readForm();
   if (!rec.date) { showToast('날짜를 입력해주세요.', true); return; }
+  if (!rec.sites.length) { showToast('담당 처리장을 먼저 선택하세요.', true); return; }
   const existing = getRecord(rec.date);
-  if (existing) {
-    if (!confirm(`${rec.date} 데이터가 이미 있습니다. 덮어쓸까요?`)) return;
+  if (existing && editSnapshotDate !== rec.date) {
+    if (!confirm(`${rec.date} 데이터가 이미 있습니다. 불러오지 않은 상태로 저장하면 기존 내용을 덮어씁니다. 계속할까요?`)) return;
   }
+  const changes = (editSnapshotDate === rec.date) ? diffFlatRecords(editSnapshot, flattenRecord(rec)) : [];
   upsertRecord(rec);
-  const synced = await syncToSheets(rec);
-  showToast(synced ? `✅ ${rec.date} 저장 및 서버 전송 완료!` : `✅ ${rec.date} 저장 완료!`);
+  const synced = await syncToSheets(rec, changes);
+  setEditSnapshot(rec);
+  hideOcrBanners();
+  const changeMsg = changes.length ? ` (수정 ${changes.length}건 이력 저장됨)` : '';
+  showToast(synced ? `✅ ${rec.date} 저장 및 서버 전송 완료!${changeMsg}` : `✅ ${rec.date} 저장 완료!`);
 }
 
-function loadTodayRecord() {
+async function loadTodayRecord() {
   const date = s('i-date');
   if (!date) { showToast('날짜를 먼저 선택하세요.', true); return; }
-  const rec = getRecord(date);
+  showToast('📂 불러오는 중...');
+  const remote = await fetchRemoteRecord(date);
+  const rec = remote || getRecord(date);
   if (!rec) { showToast('해당 날짜의 저장 데이터가 없습니다.', true); return; }
   fillForm(rec);
-  showToast(`📂 ${date} 데이터 불러왔습니다.`);
+  setEditSnapshot(rec);
+  showToast(`📂 ${date} 데이터 불러왔습니다. 확인 후 필요한 부분만 수정하세요.`);
 }
 
-function loadRecordToForm(date) {
-  const rec = getRecord(date);
+async function loadRecordToForm(date) {
+  const remote = await fetchRemoteRecord(date);
+  const rec = remote || getRecord(date);
   if (!rec) return;
   fillForm(rec);
-  switchTab('input', document.querySelector('.tab-btn'));
-  document.querySelectorAll('.tab-btn')[0].classList.add('active');
-  showToast(`📂 ${date} 불러왔습니다.`);
+  setEditSnapshot(rec);
+  switchTab('input', document.querySelectorAll('.tab-btn')[0]);
+  showToast(`📂 ${date} 불러왔습니다. 확인 후 필요한 부분만 수정하세요.`);
+}
+
+// 같은 날짜에 이미 데이터가 있으면(다른 직원이 먼저 입력한 경우 포함) 자동으로 불러와
+// 검토·수정 흐름이 되도록 한다. 없으면 빈 폼으로 시작.
+async function autoLoadTodayOnOpen() {
+  const date = s('i-date');
+  if (!date) return;
+  const remote = await fetchRemoteRecord(date);
+  const rec = remote || getRecord(date);
+  if (rec) {
+    fillForm(rec);
+    setEditSnapshot(rec);
+    showToast(`📋 ${date} 기존 입력 데이터를 불러왔습니다. 확인 후 필요한 부분만 수정하세요.`);
+  } else {
+    editSnapshot = null;
+    editSnapshotDate = null;
+  }
 }
 
 function resetInput() {
   document.getElementById('tab-input').querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(el => {
     if (!el.readOnly) el.value = '';
   });
-  document.querySelectorAll('#tab-input .btn-option').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('#weather-group .btn-option').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('#weather-group .btn-option')[0].classList.add('selected');
-  document.querySelectorAll('#part-group .btn-option')[0].classList.add('selected');
-  document.querySelectorAll('#ops-tasks .check-item').forEach(el => { el.classList.remove('checked'); el.querySelector('input').checked = false; });
-  currentPart = '환경';
-  renderPartChecklists('환경');
+  document.querySelectorAll('#process-accordion .check-item.checked').forEach(el => {
+    el.classList.remove('checked'); el.querySelector('input').checked = false;
+  });
+  hideOcrBanners();
   document.getElementById('i-date').value = new Date().toISOString().split('T')[0];
 }
 
@@ -1235,7 +1434,7 @@ function renderRecordsList() {
     <div class="record-item">
       <div>
         <div class="date">${rec.date}</div>
-        <div class="meta">[${rec.part || '-'}] ${rec.writer || ''} · ${rec.weather || ''} · 유입 ${fmt(rec.flow?.tot_in_d,0)}㎥ · 방류 ${fmt(rec.flow?.tot_out_d,0)}㎥ · 전력 ${fmt(rec.power?.d,0)}kWh</div>
+        <div class="meta">${summarizeSites(rec.sites)} · ${rec.writer || ''} · ${rec.weather || ''} · 유입 ${fmt(rec.flow?.tot_in_d,0)}㎥ · 방류 ${fmt(rec.flow?.tot_out_d,0)}㎥ · 전력 ${fmt(rec.power?.d,0)}kWh</div>
       </div>
       <div class="actions">
         <button class="btn-icon" onclick="loadRecordToForm('${rec.date}')">수정</button>
@@ -1244,7 +1443,6 @@ function renderRecordsList() {
     </div>
   `).join('');
 }
-
 function deleteRecordConfirm(date) {
   if (confirm(`${date} 데이터를 삭제할까요?`)) {
     deleteRecord(date);
@@ -1254,22 +1452,12 @@ function deleteRecordConfirm(date) {
   }
 }
 
-function clearAllConfirm() {
-  if (confirm('저장된 모든 데이터를 삭제할까요?\n이 작업은 되돌릴 수 없습니다.')) {
-    setRecords([]);
-    renderRecordsList();
-    refreshAllSelectors();
-    showToast('전체 삭제 완료');
-  }
-}
-
 // ==================== DATE / WEEK / MONTH SELECTORS ====================
 function refreshDateSelectors() {
   const dates = getRecords().map(r => r.date).reverse();
   const opts = ['<option value="">-- 날짜 선택 --</option>', ...dates.map(d => `<option value="${d}">${d}</option>`)].join('');
-  ['sel-daily-date','sel-ops-date'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
+  ['sel-daily-date'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
 }
-
 function getWeekKey(dateStr) {
   const d = new Date(dateStr);
   const day = d.getDay() || 7;
@@ -1280,34 +1468,19 @@ function getWeekKey(dateStr) {
   const label = `${mon.getFullYear()}.${fmt2(mon)} ~ ${fmt2(sun)}`;
   return { key, label };
 }
-
 function refreshWeekSelector() {
   const weeks = new Map();
-  getRecords().forEach(r => {
-    const { key, label } = getWeekKey(r.date);
-    if (!weeks.has(key)) weeks.set(key, label);
-  });
-  const opts = ['<option value="">-- 주간 선택 --</option>',
-    ...[...weeks.entries()].reverse().map(([k,l]) => `<option value="${k}">${l}</option>`)
-  ].join('');
+  getRecords().forEach(r => { const { key, label } = getWeekKey(r.date); if (!weeks.has(key)) weeks.set(key, label); });
+  const opts = ['<option value="">-- 주간 선택 --</option>', ...[...weeks.entries()].reverse().map(([k,l]) => `<option value="${k}">${l}</option>`)].join('');
   document.getElementById('sel-week').innerHTML = opts;
 }
-
 function refreshMonthSelector() {
   const months = new Map();
-  getRecords().forEach(r => {
-    const ym = r.date.slice(0,7);
-    if (!months.has(ym)) months.set(ym, `${ym.slice(0,4)}년 ${parseInt(ym.slice(5))}월`);
-  });
-  const opts = ['<option value="">-- 월 선택 --</option>',
-    ...[...months.entries()].reverse().map(([k,l]) => `<option value="${k}">${l}</option>`)
-  ].join('');
-  document.getElementById('sel-month').innerHTML = opts;
+  getRecords().forEach(r => { const ym = r.date.slice(0,7); if (!months.has(ym)) months.set(ym, `${ym.slice(0,4)}년 ${parseInt(ym.slice(5))}월`); });
+  const opts = ['<option value="">-- 월 선택 --</option>', ...[...months.entries()].reverse().map(([k,l]) => `<option value="${k}">${l}</option>`)].join('');
+  ['sel-month','sel-ops-month'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
 }
-
-function refreshAllSelectors() {
-  refreshDateSelectors(); refreshWeekSelector(); refreshMonthSelector();
-}
+function refreshAllSelectors() { refreshDateSelectors(); refreshWeekSelector(); refreshMonthSelector(); }
 
 // ==================== REPORT HELPERS ====================
 function rtbl(rows, heads) {
@@ -1315,94 +1488,94 @@ function rtbl(rows, heads) {
   const tr = rows.map(r => '<tr>' + r.map((c,i) => i===0 ? `<td class="lc">${c}</td>` : `<td>${c}</td>`).join('') + '</tr>').join('');
   return `<table class="report-table"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
 }
-
 function reactorHtml(rec) {
-  const zones = ['n','o','e'];
-  const series = ['a','b'];
+  const zones = ['n','o','e']; const series = ['a','b'];
   const metrics = [['수온(℃)','t',1],['DO(mg/L)','do',2],['MLSS(mg/L)','m',0]];
   const head = ['구 분','혐기(A)','무산소(A)','호기(A)','혐기(B)','무산소(B)','호기(B)'];
-
   const buildTable = (rKey, label) => {
     const rows = metrics.map(([name, mKey, dec]) => [
-      name,
-      ...series.flatMap(s => zones.map(z => fmt(rec.reactor?.[rKey]?.[s]?.[z+'_'+mKey], dec)))
+      name, ...series.flatMap(sk => zones.map(z => fmt(rec.reactor?.[rKey]?.[sk]?.[z+'_'+mKey], dec)))
     ]);
     return `<p style="font-size:11px;color:#7f8c8d;margin:5px 0 3px;">${label}</p>${rtbl(rows, head)}`;
   };
   return buildTable('r1','기존 SBR') + buildTable('r2','증설 SBR');
 }
-
 const DAY_KR = ['일','월','화','수','목','금','토'];
 function dayKr(dateStr) { return DAY_KR[new Date(dateStr).getDay()] + '요일'; }
+function facilityTitle(rec) {
+  const sites = summarizeSites(rec?.sites || (getSession()?.sites) || []);
+  return `강원도 횡성군 ${sites} 처리시설`;
+}
 
 // ==================== 일일업무일지 REPORT ====================
-function renderDailyReport() {
+// 원본은 부서별로 별도 문서 2종: 환경용(구분/실시사항/예정사항/비고 4열, 제목 대괄호),
+// 기계·전기용(구분/예정사항/비고 3열, 제목 소괄호). 부서별 "실시사항" 분리 입력은 아직 없어
+// 실시사항은 그날의 공정점검 기록(proc_tasks)을, 예정사항은 rec.tomorrow를 공통으로 사용한다.
+function renderDailyReport(dept) {
+  dept = dept || document.getElementById('sel-daily-dept')?.value || 'env';
   const date = document.getElementById('sel-daily-date').value;
   const el = document.getElementById('daily-report-area');
   if (!date) { el.innerHTML = '<div class="no-data">날짜를 선택하세요.</div>'; return; }
   const rec = getRecord(date);
   if (!rec) { el.innerHTML = '<div class="no-data">해당 날짜의 데이터가 없습니다.</div>'; return; }
+  const override = getOverride('daily', date + '_' + dept);
+  if (override) { el.innerHTML = override; return; }
 
-  const uSites = (rec.uang_sites||[]).join(', ') || '-';
-  const uTasks = (rec.uang_tasks||[]).map(t => '• '+t).join('\n') || '-';
-  const uNote = rec.uang_note || '';
-  const uContent = `[방문처리장] ${uSites}\n\n${uTasks}${uNote ? '\n\n[특이사항]\n'+uNote : ''}`.trim();
+  const isEnv = dept !== 'mech';
+  const rows = (rec.groups || []).map(g => {
+    const doneTasks = (rec.proc_tasks?.[g] || []).map(t => '• '+t).join('\n') || '-';
+    const doneText = rec.special ? `${doneTasks}${doneTasks!=='-' ? '\n\n' : ''}[특이사항]\n${rec.special}` : doneTasks;
+    const plannedText = rec.tomorrow || '-';
+    const groupSites = REGIONS.강원도.횡성군.groups[g].sites.filter(site => (rec.sites||[]).includes(site));
+    const groupLabel = `${g} (${groupSites.join(', ')})`;
+    return `<tr>
+      <td class="lc" style="vertical-align:top;">${groupLabel}</td>
+      ${isEnv ? `<td style="text-align:left;white-space:pre-line;vertical-align:top;">${doneText}</td>` : ''}
+      <td style="text-align:left;white-space:pre-line;vertical-align:top;">${plannedText}</td>
+      <td></td>
+    </tr>`;
+  }).join('');
 
-  const sSites = (rec.small_sites||[]).join(', ') || '-';
-  const sTasks = (rec.small_tasks||[]).map(t => '• '+t).join('\n') || '-';
-  const sNote = rec.small_note || '';
-  const sContent = `[방문처리장] ${sSites}\n\n${sTasks}${sNote ? '\n\n[특이사항]\n'+sNote : ''}`.trim();
+  const titleText = isEnv ? `일 일 보 고 [${fmtDateShort(date)}]` : `일 일 보 고 (${fmtDateShort(date)})`;
+  const sectionLabel = isEnv ? '■현장 추진사항' : '■ 현장 추진사항';
+  const headCells = isEnv
+    ? `<th style="width:16%">구 분</th><th>실 시 사 항</th><th>예 정 사 항</th><th style="width:8%">비 고</th>`
+    : `<th style="width:20%">구 분</th><th>예 정 사 항</th><th style="width:8%">비 고</th>`;
+  const colCount = isEnv ? 4 : 3;
 
   el.innerHTML = `
     <div class="report-box">
-      <div class="report-title">일 일 보 고</div>
-      <div class="report-subtitle">
-        작성일자 : ${fmtDate(date)} &nbsp;|&nbsp; 작성자 : ${rec.writer || '-'}
-        <span class="print-hidden"> &nbsp;|&nbsp; [${rec.part || '-'} 파트 — 내부용]</span>
+      <div class="report-title">${titleText}</div>
+      <div class="report-inline-head">
+        <span class="lbl">${sectionLabel}</span>
+        <span class="date">작성일자 : ${fmtDate(date)}</span>
       </div>
-      <div class="report-section">
-        <div class="report-section-title">■ 현장 추진사항</div>
-        <table class="report-table">
-          <thead><tr><th style="width:28%">구 분</th><th>예 정 사 항</th><th style="width:10%">비 고</th></tr></thead>
-          <tbody>
-            <tr><td class="lc" style="vertical-align:top;">우 항<br><small>(안흥,강림,전재,상안,성산,지구)</small></td><td style="text-align:left;white-space:pre-line;vertical-align:top;">${uContent}</td><td></td></tr>
-            <tr><td class="lc" style="vertical-align:top;">소규모 처리장<br><small>(갑천,청일,봉덕,수백,대관대,구방,삼원수,두곡)</small></td><td style="text-align:left;white-space:pre-line;vertical-align:top;">${sContent}</td><td></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="report-table">
+        <thead><tr>${headCells}</tr></thead>
+        <tbody>${rows || `<tr><td colspan="${colCount}" class="no-data">그룹 데이터 없음</td></tr>`}</tbody>
+      </table>
     </div>`;
 }
 
 // ==================== 종합운영일지 REPORT ====================
-function renderOpsReport() {
-  const date = document.getElementById('sel-ops-date').value;
-  const el = document.getElementById('ops-report-area');
-  if (!date) { el.innerHTML = '<div class="no-data">날짜를 선택하세요.</div>'; return; }
-  const rec = getRecord(date);
-  if (!rec) { el.innerHTML = '<div class="no-data">해당 날짜의 데이터가 없습니다.</div>'; return; }
-
-  const f = rec.flow || {};
-  const sl = rec.sludge || {};
-  const ch = rec.chemicals || {};
-  const pw = rec.power || {};
-
-  const opsTasks = (rec.ops_tasks||[]).map(t => '• '+t).join('\n');
-  let todayText = opsTasks;
+// 원본 xlsx "일지" 시트처럼 한 달 전체 날짜의 데이터를 하루 블록으로 세로로 이어붙여 보여준다.
+function opsReportDayBlockHtml(rec, isLast) {
+  const f = rec.flow || {}, sl = rec.sludge || {}, ch = rec.chemicals || {}, pw = rec.power || {};
+  const allTasks = Object.values(rec.proc_tasks || {}).flat().map(t => '• '+t).join('\n');
+  let todayText = allTasks;
   if (rec.special) todayText += (todayText ? '\n\n[특이사항]\n' : '[특이사항]\n') + rec.special;
 
-  el.innerHTML = `
-    <div class="report-box">
-      <div class="report-title">횡성군 우항 공공하수처리시설 종합운영일지</div>
+  return `
+    <div class="ops-day-block"${isLast ? '' : ' style="page-break-after:always;"'}>
+      <div class="report-title">${facilityTitle(rec)} 종합운영일지</div>
       <div class="info-grid">
-        <div class="info-item"><div class="key">날짜</div><div class="val">${fmtDate(date)} (${dayKr(date)})</div></div>
+        <div class="info-item"><div class="key">날짜</div><div class="val">${fmtDate(rec.date)} (${dayKr(rec.date)})</div></div>
         <div class="info-item"><div class="key">날씨</div><div class="val">${rec.weather||'-'}</div></div>
         <div class="info-item"><div class="key">기온</div><div class="val">${fmt(rec.temp_min)}℃ / ${fmt(rec.temp_max)}℃</div></div>
         <div class="info-item"><div class="key">당직자</div><div class="val">${rec.duty||'-'}</div></div>
         <div class="info-item"><div class="key">현장담당자</div><div class="val">${rec.manager||'-'}</div></div>
-        <div class="info-item"><div class="key">유지관리기간</div><div class="val">2022.01~2026.12</div></div>
-        <div class="info-item print-hidden" style="border-color:#f39c12;background:#fef9e7;"><div class="key" style="color:#b7950b;">작성 파트 (내부용)</div><div class="val" style="color:#b7950b;">${PART_ICON[rec.part]||''} ${rec.part||'-'}</div></div>
+        <div class="info-item"><div class="key">담당처리장</div><div class="val">${summarizeSites(rec.sites)}</div></div>
       </div>
-
       <div class="report-section">
         <div class="report-section-title">3. 하수 유입량, 처리수 방류유량</div>
         ${rtbl([
@@ -1414,7 +1587,6 @@ function renderOpsReport() {
           ['총 일일 유량 방류', fmt(f.tot_out_d,0), fmt(f.tot_out_a,0), ''],
         ], ['구 분', '일일유량 (㎥/day)', '적산유량 (㎥)', '비 고'])}
       </div>
-
       <div class="report-section">
         <div class="report-section-title">4. 반응조, 슬러지 계통 운전현황</div>
         ${reactorHtml(rec)}
@@ -1425,7 +1597,6 @@ function renderOpsReport() {
           ['총 슬러지 반출량 (ton)', fmt(sl.tot_d), fmt(sl.tot_a), ''],
         ], ['구 분', '일일', '적산', '비 고'])}
       </div>
-
       <div class="report-section">
         <div class="report-section-title">5. 약품 및 재이용수 사용량</div>
         ${rtbl([
@@ -1435,12 +1606,10 @@ function renderOpsReport() {
           ['재이용수 사용량 (㎥)', fmt(ch.reuse_d), fmt(ch.reuse_a), ''],
         ], ['구 분', '일일', '적산', '비 고'])}
       </div>
-
       <div class="report-section">
         <div class="report-section-title">6. 전력 사용량</div>
         ${rtbl([['전력 사용량 (kWh)', fmt(pw.d), fmt(pw.a), '']], ['구 분','일일','적산','비 고'])}
       </div>
-
       <div class="report-section">
         <div class="report-section-title">7. 금일 업무 및 특이사항</div>
         <table class="report-table">
@@ -1453,6 +1622,20 @@ function renderOpsReport() {
       </div>
     </div>`;
 }
+function renderOpsReport() {
+  const ym = document.getElementById('sel-ops-month').value;
+  const el = document.getElementById('ops-report-area');
+  if (!ym) { el.innerHTML = '<div class="no-data">월을 선택하세요.</div>'; return; }
+  const recs = getRecords().filter(r => r.date.startsWith(ym));
+  if (!recs.length) { el.innerHTML = '<div class="no-data">해당 월에 저장된 데이터가 없습니다.</div>'; return; }
+  const override = getOverride('ops', ym);
+  if (override) { el.innerHTML = override; return; }
+
+  el.innerHTML = `
+    <div class="report-box">
+      ${recs.map((rec, i) => opsReportDayBlockHtml(rec, i === recs.length - 1)).join('')}
+    </div>`;
+}
 
 // ==================== 주간업무보고 REPORT ====================
 function renderWeeklyReport() {
@@ -1463,187 +1646,125 @@ function renderWeeklyReport() {
   const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 6);
   const weekEndStr = weekEnd.toISOString().split('T')[0];
   const { label } = getWeekKey(weekStart);
-
   const recs = getRecords().filter(r => r.date >= weekStart && r.date <= weekEndStr);
   if (!recs.length) { el.innerHTML = '<div class="no-data">해당 주간에 저장된 데이터가 없습니다.</div>'; return; }
+  const override = getOverride('weekly', weekStart);
+  if (override) { el.innerHTML = override; return; }
 
-  // 주차 계산
   const firstDay = new Date(weekStart);
   const yearStart = new Date(firstDay.getFullYear(), 0, 1);
   const weekNum = Math.ceil(((firstDay - yearStart) / 86400000 + yearStart.getDay() + 1) / 7);
 
-  // ── Ⅰ 수질관리 현황 ──
-  // 이번 주 가장 최근 측정 데이터 사용
-  const latestWQ = (site) => {
-    const r = [...recs].reverse().find(r => r.wq?.[site]?.bod != null);
-    return r?.wq?.[site] || null;
-  };
+  const latestWQ = (site) => { const r = [...recs].reverse().find(r => r.wq?.[site]?.bod != null); return r?.wq?.[site] || null; };
   const wqHS = latestWQ('hs'), wqUH = latestWQ('uh'), wqDN = latestWQ('dn');
   const wqV = (q, k, dec) => q?.[k] != null ? fmt(q[k], dec ?? (k==='tn'||k==='tp'?3:1)) : '-';
 
+  // 방류수질기준: 원본 hwp 9~13주차 모두 동일한 기준값 사용 (횡성·우항 / 둔내 별도 기준)
   const wqTableHTML = `
     <table class="report-table" style="font-size:11px;">
-      <thead>
-        <tr>
-          <th style="width:18%">구 분</th>
-          <th>BOD<br><small>mg/L</small></th><th>TOC<br><small>mg/L</small></th><th>SS<br><small>mg/L</small></th>
-          <th>T-N<br><small>mg/L</small></th><th>T-P<br><small>mg/L</small></th><th>대장균<br><small>개/mL</small></th>
-        </tr>
-      </thead>
+      <thead><tr><th style="width:18%">구 분</th><th>BOD<br><small>mg/L</small></th><th>TOC<br><small>mg/L</small></th><th>SS<br><small>mg/L</small></th><th>T-N<br><small>mg/L</small></th><th>T-P<br><small>mg/L</small></th><th>대장균<br><small>개/mL</small></th></tr></thead>
       <tbody>
-        <tr style="background:#fff3cd;">
-          <td class="lc" style="font-size:10px;color:#856404;">방류수질기준<br>(횡성·우항)</td>
-          <td>10</td><td>25</td><td>10</td><td>20</td><td>0.5</td><td>1,000이하</td>
-        </tr>
-        <tr>
-          <td class="lc">횡성</td>
-          <td>${wqV(wqHS,'bod')}</td><td>${wqV(wqHS,'toc')}</td><td>${wqV(wqHS,'ss')}</td>
-          <td>${wqV(wqHS,'tn')}</td><td>${wqV(wqHS,'tp')}</td><td>${wqHS?.col ?? '-'}</td>
-        </tr>
-        <tr>
-          <td class="lc">우항</td>
-          <td>${wqV(wqUH,'bod')}</td><td>${wqV(wqUH,'toc')}</td><td>${wqV(wqUH,'ss')}</td>
-          <td>${wqV(wqUH,'tn')}</td><td>${wqV(wqUH,'tp')}</td><td>${wqUH?.col ?? '-'}</td>
-        </tr>
-        <tr style="background:#fff3cd;">
-          <td class="lc" style="font-size:10px;color:#856404;">방류수질기준<br>(둔내)</td>
-          <td>5</td><td>15</td><td>10</td><td>20</td><td>0.3</td><td>1,000이하</td>
-        </tr>
-        <tr>
-          <td class="lc">둔내</td>
-          <td>${wqV(wqDN,'bod')}</td><td>${wqV(wqDN,'toc')}</td><td>${wqV(wqDN,'ss')}</td>
-          <td>${wqV(wqDN,'tn')}</td><td>${wqV(wqDN,'tp')}</td><td>${wqDN?.col ?? '-'}</td>
-        </tr>
+        <tr><td class="lc">방류수질기준<br>(횡성·우항)</td><td>10</td><td>25</td><td>10</td><td>20</td><td>0.5</td><td>1,000 이하</td></tr>
+        <tr><td class="lc">횡성</td><td>${wqV(wqHS,'bod')}</td><td>${wqV(wqHS,'toc')}</td><td>${wqV(wqHS,'ss')}</td><td>${wqV(wqHS,'tn')}</td><td>${wqV(wqHS,'tp')}</td><td>${wqHS?.col ?? '-'}</td></tr>
+        <tr><td class="lc">우항</td><td>${wqV(wqUH,'bod')}</td><td>${wqV(wqUH,'toc')}</td><td>${wqV(wqUH,'ss')}</td><td>${wqV(wqUH,'tn')}</td><td>${wqV(wqUH,'tp')}</td><td>${wqUH?.col ?? '-'}</td></tr>
+        <tr><td class="lc">방류수질기준<br>(둔내)</td><td>5</td><td>15</td><td>10</td><td>20</td><td>0.3</td><td>1,000 이하</td></tr>
+        <tr><td class="lc">둔내</td><td>${wqV(wqDN,'bod')}</td><td>${wqV(wqDN,'toc')}</td><td>${wqV(wqDN,'ss')}</td><td>${wqV(wqDN,'tn')}</td><td>${wqV(wqDN,'tp')}</td><td>${wqDN?.col ?? '-'}</td></tr>
       </tbody>
-    </table>
-    ${(!wqHS && !wqUH && !wqDN) ? '<p style="color:#e74c3c;font-size:11px;margin-top:4px;">※ 수질 미입력 — 오늘 입력 탭 ▶ 방류수 수질 분석 결과에 입력하세요.</p>' : ''}`;
+    </table>`;
 
-  // ── Ⅱ 운영현황 ──
-  const cnt = recs.length || 1;
-  const weekAvg = (vals) => {
-    const filled = vals.filter(v => v != null && v > 0);
-    return filled.length ? (filled.reduce((a,v)=>a+v,0) / filled.length).toFixed(0) : '-';
-  };
-  const hsIn  = weekAvg(recs.map(r => r.flow_hs?.in_d));
-  const hsOut = weekAvg(recs.map(r => r.flow_hs?.out_d));
-  const dnIn  = weekAvg(recs.map(r => r.flow_dn?.in_d));
-  const dnOut = weekAvg(recs.map(r => r.flow_dn?.out_d));
-  const uhIn  = weekAvg(recs.map(r => r.flow?.tot_in_d));
-  const uhOut = weekAvg(recs.map(r => r.flow?.tot_out_d));
+  const weekAvg = (vals) => { const filled = vals.filter(v => v != null && v > 0); return filled.length ? (filled.reduce((a,v)=>a+v,0) / filled.length).toFixed(0) : '-'; };
+  const hsIn = weekAvg(recs.map(r => r.flow_hs?.in_d)), hsOut = weekAvg(recs.map(r => r.flow_hs?.out_d));
+  const dnIn = weekAvg(recs.map(r => r.flow_dn?.in_d)), dnOut = weekAvg(recs.map(r => r.flow_dn?.out_d));
+  const uhIn = weekAvg(recs.map(r => r.flow?.tot_in_d)), uhOut = weekAvg(recs.map(r => r.flow?.tot_out_d));
+  const smallNote = recs.filter(r => r.small_note).map(r => r.small_note).join(' / ') || '특이사항 없음';
 
+  // 원본 hwp와 동일하게 [500㎥/일 이상]·[500㎥/일 이하] 두 개의 표로 분리 (시설용량 포함)
   const opsTable500up = `
     <table class="report-table" style="font-size:11px;">
-      <thead>
-        <tr><th style="width:14%">구 분</th><th style="width:12%">처리장</th><th>시설용량<br>(㎥/일)</th><th>유입량<br>(㎥/일)</th><th>방류량<br>(㎥/일)</th><th>비 고</th></tr>
-      </thead>
+      <thead><tr><th style="width:14%">구분</th><th style="width:12%">처리장</th><th>시설용량<br>(㎥/일)</th><th>유입량<br>(㎥/일)</th><th>방류량<br>(㎥/일)</th><th>비고</th></tr></thead>
       <tbody>
-        <tr>
-          <td class="lc" rowspan="3" style="font-size:10px;">500㎥/일<br>이 상</td>
-          <td class="lc">횡성</td><td>10,800</td><td>${hsIn}</td><td>${hsOut}</td><td></td>
-        </tr>
+        <tr><td class="lc" rowspan="3">500㎥/일 이상</td><td class="lc">횡성</td><td>10,800</td><td>${hsIn}</td><td>${hsOut}</td><td></td></tr>
         <tr><td class="lc">둔내</td><td>1,500</td><td>${dnIn}</td><td>${dnOut}</td><td></td></tr>
         <tr><td class="lc">우항</td><td>1,000</td><td>${uhIn}</td><td>${uhOut}</td><td></td></tr>
       </tbody>
     </table>`;
-
-  const smallNote = recs.filter(r => r.small_note).map(r => r.small_note).join(' / ') || '특이사항 없음';
   const opsTable500dn = `
     <table class="report-table" style="font-size:11px;">
-      <thead>
-        <tr><th style="width:14%">구 분</th><th style="width:25%">처리장</th><th>시설용량</th><th>유입량</th><th>방류량</th><th>비 고</th></tr>
-      </thead>
+      <thead><tr><th style="width:14%">구분</th><th style="width:20%">처리장</th><th>시설용량</th><th>유입량</th><th>방류량</th><th>비고</th></tr></thead>
       <tbody>
-        <tr>
-          <td class="lc" style="font-size:10px;">500㎥/일<br>이 하</td>
-          <td class="lc" style="font-size:10px;">공근 외 15개소</td>
-          <td>-</td><td>-</td><td>-</td>
-          <td style="text-align:left;font-size:10px;">${smallNote}</td>
-        </tr>
+        <tr><td class="lc">500㎥/일 이하</td><td class="lc">공근 외 15개소</td><td>-</td><td>-</td><td>-</td><td style="text-align:left;">${smallNote}</td></tr>
       </tbody>
     </table>`;
 
-  // ── Ⅲ 금주 업무보고 집계 ──
-  const allUT = [...new Set(recs.flatMap(r => r.uang_tasks||[]))];
-  const allST = [...new Set(recs.flatMap(r => r.small_tasks||[]))];
-  const allOT = [...new Set(recs.flatMap(r => r.ops_tasks||[]))];
+  // ── Ⅲ. 금주 업무보고: 체크된 "공정 - 점검유형" 조합을 3개 버킷으로 분류하고 발생 횟수를 세어 요약한다 ──
+  const PROCESS_BUCKET = {
+    scum: 'process', inflow: 'process', anaerobic: 'process', anoxic: 'process', aerobic: 'process', decant: 'process',
+    tp: 'equip', sludge: 'equip', water: 'equip', tms: 'equip', pump: 'equip', disinfect: 'equip',
+  };
+  const bucketCount = { process: new Map(), equip: new Map() };
+  recs.forEach(r => Object.entries(r.proc_tasks || {}).forEach(([g, arr]) => {
+    (arr || []).forEach(flat => {
+      const procLabel = flat.split(' - ')[0];
+      const procKey = Object.keys(PROCESS_MASTER).find(k => PROCESS_MASTER[k].label === procLabel);
+      const bucket = PROCESS_BUCKET[procKey] || 'process';
+      const key = `${g} · ${flat}`;
+      bucketCount[bucket].set(key, (bucketCount[bucket].get(key) || 0) + 1);
+    });
+  }));
+  const summarizeBucket = (map) => {
+    const entries = [...map.entries()].sort((a,b) => b[1]-a[1]);
+    if (!entries.length) return '• 해당 없음';
+    return entries.map(([k,c]) => `• ${k} (주 ${c}회 수행)`).join('<br>');
+  };
+  const cleanKW = ['청소','환경관리','환경 정비','대청소','세척','정리','제초','철거'];
+  const cleanTasks = [...new Set(recs.flatMap(r => [r.special, r.suggestion].filter(Boolean)).filter(t => cleanKW.some(k => t.includes(k))))];
 
-  const processKW = ['공정','수질','반응조','미생물','슬러지 경계','유입부하','방류수','SV','DO','MLSS','TMS','재이용'];
-  const equipKW   = ['펌프','블로워','탈수기','밸브','열선','스크린','제어반','전동기','발전기','모터','인버터','EOCR','감속기','계측기','수위계','유량계','송풍기','디켄터','Decanter'];
-  const cleanKW   = ['청소','환경관리','환경 정비','대청소','세척'];
+  const taskSection = `
+    <p style="font-size:12px;font-weight:700;margin-bottom:4px;">① 하수처리 과정 점검</p>
+    <div style="font-size:11px;line-height:1.8;margin-bottom:8px;">${summarizeBucket(bucketCount.process)}</div>
+    <p style="font-size:12px;font-weight:700;margin-bottom:4px;">② 시설 장비 점검 및 유지보수</p>
+    <div style="font-size:11px;line-height:1.8;margin-bottom:8px;">${summarizeBucket(bucketCount.equip)}</div>
+    <p style="font-size:12px;font-weight:700;margin-bottom:4px;">③ 시설 청소 및 환경 관리</p>
+    <div style="font-size:11px;line-height:1.8;">${cleanTasks.length ? cleanTasks.map(t=>'• '+t).join('<br>') : '• 해당 없음'}</div>`;
 
-  const filterKW = (tasks, kws) => tasks.filter(t => kws.some(k => t.includes(k)));
-  const dedup = arr => [...new Set(arr)];
+  const incidents = recs.filter(r => r.special).map(r => `• ${r.date.slice(5).replace('-','/')} : ${r.special}`).join('<br>') || '• 특이사항 없음';
 
-  const procTasks  = dedup([...filterKW(allUT, processKW), ...filterKW(allOT, processKW)]);
-  const equipTasks = dedup([...filterKW(allUT, equipKW), ...filterKW(allST, equipKW), ...filterKW(allOT, equipKW)]);
-  const cleanTasks = dedup([...filterKW(allUT, cleanKW), ...filterKW(allST, cleanKW)]);
+  // ── Ⅳ. 내주 업무보고: 마지막 날 하나가 아니라 그 주 전체의 tomorrow 를 모아 중복 제거 후 통합 ──
+  const nextWeekList = [...new Set(recs.map(r => r.tomorrow).filter(Boolean))];
+  const nextWeekText = nextWeekList.length ? nextWeekList.map(t => '• ' + t).join('<br>') : '';
 
-  const allUangNotes = recs.filter(r => r.uang_note).map(r => `• ${r.uang_note}`);
-  const allSpecials  = recs.filter(r => r.special).map(r => `• ${r.date.slice(5).replace('-','/')} : ${r.special}`);
-  const incidents = [...allUangNotes, ...allSpecials];
-
-  const mkList = (items, fallback='') =>
-    items.length ? items.map(t => `• ${t}`).join('<br>') : (fallback || '• 해당 없음');
-
-  // ── Ⅳ 내주 업무보고 ──
-  const lastRec = recs[recs.length - 1];
-  const nextWeekText = lastRec?.tomorrow || '';
-
-  // ── Ⅴ 건의사항 ──
   const suggestions = recs.filter(r => r.suggestion).map(r => `• ${r.suggestion}`).join('<br>');
 
+  const coverTitle = `${weekEnd.getFullYear()}년 ${weekEnd.getMonth()+1}월 ${weekNum}주차 주간업무보고`;
   el.innerHTML = `
     <div class="report-box">
-      <div class="report-title">주 간 업 무 보 고</div>
+      ${reportCoverHtml('횡성군 공공하수처리시설 운영ㆍ관리', coverTitle)}
       <div class="report-subtitle">보고기간 : ${label} (${weekNum}주차) &nbsp;|&nbsp; 보고일 : ${new Date().toLocaleDateString('ko-KR')}</div>
-
       <div class="report-section" style="margin-bottom:16px;">
-        <div class="report-section-title">Ⅰ. 수질관리 현황 (${label})</div>
-        <div style="padding:6px 8px;">
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin-bottom:5px;">① 수질현황</p>
-          ${wqTableHTML}
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin:10px 0 4px;">② 특이사항</p>
-          <div style="font-size:11px;min-height:28px;line-height:1.8;">${incidents.join('<br>') || '• 특이사항 없음'}</div>
-        </div>
+        ${reportChapterHtml('Ⅰ', `수질관리 현황 (${label})`)}
+        <p style="font-size:12px;font-weight:700;margin-bottom:4px;">① 수질현황</p>
+        ${wqTableHTML}
+        <p style="font-size:12px;font-weight:700;margin:10px 0 4px;">② 특이사항</p>
+        <div style="font-size:11px;min-height:28px;line-height:1.8;">${incidents}</div>
       </div>
-
       <div class="report-section" style="margin-bottom:16px;">
-        <div class="report-section-title">Ⅱ. 하수처리시설 운영현황 (${label})</div>
-        <div style="padding:6px 8px;">
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin-bottom:5px;">① 하수처리시설 운영현황 [500㎥/일 이상]</p>
-          ${opsTable500up}
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin:10px 0 5px;">② 하수처리시설 운영현황 [500㎥/일 이하]</p>
-          ${opsTable500dn}
-        </div>
+        ${reportChapterHtml('Ⅱ', `하수처리시설 운영현황 (${label})`)}
+        <p style="font-size:12px;font-weight:700;margin-bottom:4px;">① 하수처리시설 운영현황 [500㎥/일 이상]</p>
+        ${opsTable500up}
+        <p style="font-size:12px;font-weight:700;margin:10px 0 4px;">② 하수처리시설 운영현황 [500㎥/일 이하]</p>
+        ${opsTable500dn}
       </div>
-
       <div class="report-section" style="margin-bottom:16px;">
-        <div class="report-section-title">Ⅲ. 하수처리시설 금주 업무보고 (${label})</div>
-        <div style="padding:6px 8px;">
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin-bottom:4px;">① 하수처리 과정 점검</p>
-          <div style="font-size:11px;line-height:1.8;min-height:22px;">${mkList(procTasks, '• 19개 하수처리시설 반응조 미생물(SV체크) 및 슬러지 경계면 확인')}</div>
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin:10px 0 4px;">② 시설 장비 점검 및 유지보수</p>
-          <div style="font-size:11px;line-height:1.8;min-height:22px;">${mkList(equipTasks, '• 각 처리시설 기계·전기 설비 점검')}</div>
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin:10px 0 4px;">③ 시설 청소 및 환경 관리</p>
-          <div style="font-size:11px;line-height:1.8;min-height:22px;">${mkList(cleanTasks, '• 각 처리장 환경 정비 실시')}</div>
-        </div>
+        ${reportChapterHtml('Ⅲ', '하수처리시설 금주 업무보고 (그룹·공정별)')}
+        ${taskSection}
       </div>
-
       <div class="report-section" style="margin-bottom:16px;">
-        <div class="report-section-title">Ⅳ. 하수처리시설 내주 업무보고</div>
-        <div style="padding:6px 8px;">
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin-bottom:4px;">① 하수처리 과정 점검</p>
-          <div style="font-size:11px;white-space:pre-line;line-height:1.8;min-height:22px;">${nextWeekText || '• 19개 하수처리시설 반응조 미생물(SV체크) 및 슬러지 경계면 확인\n• 유입부하 및 방류수 시험분석 결과값에 따른 미생물 농도 및 공정조정'}</div>
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin:10px 0 4px;">② 시설 장비 점검 및 유지보수</p>
-          <div style="font-size:11px;line-height:1.8;min-height:22px;">• 각 처리시설 기계·전기 설비 정기 점검</div>
-          <p style="font-size:12px;font-weight:700;color:#1a5276;margin:10px 0 4px;">③ 시설 청소 및 환경 관리</p>
-          <div style="font-size:11px;line-height:1.8;min-height:22px;">• 각 처리장 환경 정비 실시</div>
-        </div>
+        ${reportChapterHtml('Ⅳ', '하수처리시설 내주 업무보고')}
+        <div style="padding:2px 4px;font-size:11px;white-space:pre-line;line-height:1.8;">${nextWeekText || '• 다음 주 예정 업무 미입력'}</div>
       </div>
-
       <div class="report-section" style="margin-bottom:8px;">
-        <div class="report-section-title">Ⅴ. 건의사항</div>
-        <div style="padding:8px 10px;font-size:11px;min-height:36px;line-height:1.8;">${suggestions || '• 특이사항 없음'}</div>
+        ${reportChapterHtml('Ⅴ', '건의사항')}
+        <div style="padding:2px 4px;font-size:11px;min-height:36px;line-height:1.8;">${suggestions || '• 특이사항 없음'}</div>
       </div>
     </div>`;
 }
@@ -1653,13 +1774,12 @@ function renderMonthlyReport() {
   const ym = document.getElementById('sel-month').value;
   const el = document.getElementById('monthly-report-area');
   if (!ym) { el.innerHTML = '<div class="no-data">월을 선택하세요.</div>'; return; }
-
   const recs = getRecords().filter(r => r.date.startsWith(ym));
   if (!recs.length) { el.innerHTML = '<div class="no-data">해당 월에 저장된 데이터가 없습니다.</div>'; return; }
+  const override = getOverride('monthly', ym);
+  if (override) { el.innerHTML = override; return; }
 
   const year = ym.slice(0,4), month = parseInt(ym.slice(5));
-
-  // 월 합계
   const totIn = recs.reduce((a,r) => a+(r.flow?.tot_in_d||0), 0);
   const totOut = recs.reduce((a,r) => a+(r.flow?.tot_out_d||0), 0);
   const totPow = recs.reduce((a,r) => a+(r.power?.d||0), 0);
@@ -1668,25 +1788,18 @@ function renderMonthlyReport() {
   const totSludge = recs.reduce((a,r) => a+(r.sludge?.s1_d||0)+(r.sludge?.s2_d||0), 0);
   const treatRate = totIn > 0 ? ((totOut/totIn)*100).toFixed(1) : '-';
 
-  // 일별 데이터 표
   const dailyRows = recs.map(r => [
-    r.date.slice(5).replace('-','/'),
-    r.weather||'-',
-    fmt(r.flow?.s1_in_d,0), fmt(r.flow?.s1_out_d,0),
-    fmt(r.flow?.s2_in_d,0), fmt(r.flow?.s2_out_d,0),
+    r.date.slice(5).replace('-','/'), r.weather||'-',
+    fmt(r.flow?.s1_in_d,0), fmt(r.flow?.s1_out_d,0), fmt(r.flow?.s2_in_d,0), fmt(r.flow?.s2_out_d,0),
     fmt(r.flow?.tot_in_d,0), fmt(r.flow?.tot_out_d,0),
-    fmt((r.sludge?.s1_d||0)+(r.sludge?.s2_d||0)),
-    fmt(r.chemicals?.s1_pac_d), fmt(r.chemicals?.s2_pac_d),
-    fmt(r.power?.d),
+    fmt((r.sludge?.s1_d||0)+(r.sludge?.s2_d||0)), fmt(r.chemicals?.s1_pac_d), fmt(r.chemicals?.s2_pac_d), fmt(r.power?.d),
   ]);
-
   const incidents = recs.filter(r => r.special).map(r => `• ${r.date}: ${r.special}`).join('\n');
 
   el.innerHTML = `
     <div class="report-box">
-      <div class="report-title">${year}년 ${month}월 운영 보고서</div>
-      <div class="report-subtitle">횡성군 우항 공공하수처리시설 &nbsp;|&nbsp; 작성일 : ${new Date().toLocaleDateString('ko-KR')}</div>
-
+      ${reportCoverSimpleHtml('횡성군 공공하수처리시설 관리대행용역', [`운영관리 ${month}월 월간보고`], `${year}. ${month}.`)}
+      <div class="report-subtitle">${facilityTitle(recs[recs.length-1])} &nbsp;|&nbsp; 작성일 : ${new Date().toLocaleDateString('ko-KR')}</div>
       <div class="report-section">
         <div class="report-section-title">1. 월간 운영 현황 요약</div>
         ${rtbl([
@@ -1696,20 +1809,12 @@ function renderMonthlyReport() {
           ['슬러지 인발 합계 (㎥)', totSludge.toFixed(1), '운영일수 (일)', recs.length],
         ], ['항 목', '수 치', '항 목', '수 치'])}
       </div>
-
       <div class="report-section">
         <div class="report-section-title">2. 일별 운영 기록</div>
         <div style="overflow-x:auto;">
           <table class="report-table" style="min-width:700px;font-size:10px;">
             <thead>
-              <tr>
-                <th rowspan="2">날짜</th><th rowspan="2">날씨</th>
-                <th colspan="2">기존 SBR (㎥)</th><th colspan="2">증설 SBR (㎥)</th>
-                <th colspan="2">총 유량 (㎥)</th>
-                <th rowspan="2">슬러지<br>인발(㎥)</th>
-                <th colspan="2">PAC (kg)</th>
-                <th rowspan="2">전력<br>(kWh)</th>
-              </tr>
+              <tr><th rowspan="2">날짜</th><th rowspan="2">날씨</th><th colspan="2">기존 SBR (㎥)</th><th colspan="2">증설 SBR (㎥)</th><th colspan="2">총 유량 (㎥)</th><th rowspan="2">슬러지<br>인발(㎥)</th><th colspan="2">PAC (kg)</th><th rowspan="2">전력<br>(kWh)</th></tr>
               <tr><th>유입</th><th>방류</th><th>유입</th><th>방류</th><th>유입</th><th>방류</th><th>기존</th><th>증설</th></tr>
             </thead>
             <tbody>
@@ -1721,20 +1826,413 @@ function renderMonthlyReport() {
                 <td>${recs.reduce((a,r)=>a+(r.flow?.s2_in_d||0),0).toFixed(0)}</td>
                 <td>${recs.reduce((a,r)=>a+(r.flow?.s2_out_d||0),0).toFixed(0)}</td>
                 <td>${totIn.toFixed(0)}</td><td>${totOut.toFixed(0)}</td>
-                <td>${totSludge.toFixed(1)}</td>
-                <td>${totPac1.toFixed(1)}</td><td>${totPac2.toFixed(1)}</td>
-                <td>${totPow.toFixed(1)}</td>
+                <td>${totSludge.toFixed(1)}</td><td>${totPac1.toFixed(1)}</td><td>${totPac2.toFixed(1)}</td><td>${totPow.toFixed(1)}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-
       <div class="report-section">
         <div class="report-section-title">3. 이달의 특이사항</div>
         <div style="padding:8px 10px;font-size:11px;white-space:pre-line;min-height:60px;">${incidents||'특이사항 없음'}</div>
       </div>
     </div>`;
+}
+
+// ==================== 보고서 수동 편집 / override 저장 ====================
+const REPORT_AREA_ID = { daily: 'daily-report-area', ops: 'ops-report-area', weekly: 'weekly-report-area', monthly: 'monthly-report-area' };
+const REPORT_RENDERER = { daily: renderDailyReport, ops: renderOpsReport, weekly: renderWeeklyReport, monthly: renderMonthlyReport };
+
+function overrideStorageKey(type, key) { return `wt2_report_override_${type}_${key}`; }
+function getOverride(type, key) { return key ? localStorage.getItem(overrideStorageKey(type, key)) : null; }
+function setOverride(type, key, html) { if (key) localStorage.setItem(overrideStorageKey(type, key), html); }
+function clearOverride(type, key) { if (key) localStorage.removeItem(overrideStorageKey(type, key)); }
+
+function reportKeyFor(type) {
+  const selId = { daily: 'sel-daily-date', ops: 'sel-ops-month', weekly: 'sel-week', monthly: 'sel-month' }[type];
+  const base = document.getElementById(selId)?.value || '';
+  if (type === 'daily' && base) return base + '_' + (document.getElementById('sel-daily-dept')?.value || 'env');
+  return base;
+}
+
+function toggleReportEdit(type) {
+  const box = document.querySelector('#' + REPORT_AREA_ID[type] + ' .report-box');
+  if (!box) { showToast('먼저 보고서를 조회하세요.', true); return; }
+  const on = box.contentEditable !== 'true';
+  box.contentEditable = on ? 'true' : 'false';
+  showToast(on ? '✏️ 편집 모드 ON — 표 내용을 직접 눌러 수정하세요.' : '편집 모드 OFF');
+}
+
+function saveReportOverride(type) {
+  const box = document.querySelector('#' + REPORT_AREA_ID[type] + ' .report-box');
+  const key = reportKeyFor(type);
+  if (!box || !key) { showToast('저장할 보고서가 없습니다. 먼저 조회하세요.', true); return; }
+  const before = getOverride(type, key);
+  box.contentEditable = 'false';
+  const after = box.outerHTML;
+  setOverride(type, key, after);
+  if (before !== after) logReportOverride(type, key, before, after);
+  showToast('💾 편집 내용이 저장되었습니다. (수정이력에 기록됨)');
+}
+
+function regenerateReport(type) {
+  const key = reportKeyFor(type);
+  if (!key) { showToast('먼저 보고서를 조회하세요.', true); return; }
+  clearOverride(type, key);
+  REPORT_RENDERER[type]();
+  showToast('🔄 원본 내용으로 다시 생성했습니다.');
+}
+
+// ==================== 워드(.doc)로 내보내기 ====================
+function exportReportWord(type) {
+  const box = document.querySelector('#' + REPORT_AREA_ID[type] + ' .report-box');
+  if (!box) { showToast('먼저 보고서를 조회하세요.', true); return; }
+  const key = reportKeyFor(type) || 'report';
+  const style = `
+    body { font-family:'돋움','맑은 고딕',sans-serif; }
+    table { border-collapse: collapse; width:100%; }
+    th, td { border:1px solid #000; padding:4px 6px; font-size:11px; text-align:center; }
+    th { background:#D9D9D9; font-weight:700; }
+    .lc { text-align:left; background:#F2F2F2; font-weight:600; }
+    .report-title { text-align:center; font-size:22px; font-weight:700; padding:8px 0; }
+    .report-section-title { font-size:12px; font-weight:700; margin:8px 0 6px; }
+    .report-chapter { text-align:center; margin:22px 0 10px; }
+    .report-chapter .num { font-size:15px; font-weight:700; display:block; }
+    .report-chapter .ttl { font-size:13px; font-weight:700; display:block; margin-top:2px; }
+    .report-inline-head { display:flex; justify-content:space-between; }
+    .cover-doc-table { border-collapse:collapse; width:100%; }
+    .cover-doc-table td, .cover-doc-table th { border:1px solid #000; padding:7px 10px; text-align:center; }
+    .cover-bar-gradient { height:9px; background:#5f8fc7; }
+    .cover-bar-solid { height:13px; background:#0a2f6e; }
+    .cover-org { font-size:17px; font-weight:700; }
+    .cover-title { text-align:center; font-size:32px; font-weight:800; }
+    .cover-company { text-align:center; font-size:26px; font-weight:700; }
+    .info-grid { width:100%; }
+  `;
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+    <head><meta charset="utf-8"><title>보고서</title><style>${style}</style></head>
+    <body>${box.outerHTML}</body></html>`;
+  const blob = new Blob(['﻿', html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${type}_report_${key}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📝 워드(.doc) 다운로드 완료 — 한글에서도 열 수 있습니다.');
+}
+
+// ==================== 종합운영일지 엑셀 다운로드 (ExcelJS) ====================
+// 원본 xlsx의 "일지" 시트(하루 전체화면을 세로로 쌓은 구조)를 완전히 1:1로 재현하지는 않지만,
+// 같은 섹션 구성(기본정보/유량/반응조/슬러지/약품/전력/업무)과 회색 헤더·검정 테두리 톤을 최대한 맞춰
+// 날짜별 블록을 세로로 이어붙인다. 저장된 레코드가 늘어날 때마다 다시 다운로드하면 전체가 반영된다.
+const XL_GRAY = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
+const XL_BORDER = { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} };
+const XL_CENTER = { vertical: 'middle', horizontal: 'center' };
+const XL_COLS = 8;
+
+function xlSectionTable(ws, row, title, headers, dataRows) {
+  ws.mergeCells(row, 1, row, XL_COLS);
+  const t = ws.getCell(row, 1);
+  t.value = title; t.fill = XL_GRAY; t.font = { bold: true, name: '돋움', size: 10 }; t.border = XL_BORDER; t.alignment = XL_CENTER;
+  row++;
+  headers.forEach((h, i) => {
+    const c = ws.getCell(row, i + 1);
+    c.value = h; c.fill = XL_GRAY; c.font = { bold: true, name: '돋움', size: 9 }; c.border = XL_BORDER; c.alignment = XL_CENTER;
+  });
+  row++;
+  dataRows.forEach(r => {
+    r.forEach((v, i) => {
+      const c = ws.getCell(row, i + 1);
+      c.value = v; c.font = { name: '돋움', size: 9 }; c.border = XL_BORDER;
+      c.alignment = i === 0 ? { horizontal: 'left', vertical: 'middle' } : XL_CENTER;
+    });
+    row++;
+  });
+  return row;
+}
+
+// 원본 워크북(종합운영일지(우항 03월).xlsx)을 zip으로 직접 풀어 6개 시트의 실제 헤더/병합/컬럼 구조를 대조 확인한 뒤 반영함.
+// 시트 5개: 일지(하루 전체화면 세로 반복) / 일일점검(날짜별 1행 집계표) / 우항월보(반응조)(날짜별 반응조 수치) /
+// 월보(날짜별 유량·DO·약품·전력 월간표) / 유입,방류 수온,pH(현재 앱은 이 값을 아직 입력받지 않아 골격만 생성)
+// 원본은 병합셀 4천개 이상 쓰는 매우 정교한 서식이라 셀 좌표 1:1까지는 아니지만, 시트 구성·헤더 문구·표 구조는 최대한 그대로 맞췄다.
+
+function colLetter(n) {
+  let s = '';
+  while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); }
+  return s;
+}
+function xlStyleTitle(cell, value, size) {
+  cell.value = value; cell.font = { bold: true, size: size || 14, name: '돋움' }; cell.alignment = XL_CENTER; cell.fill = XL_GRAY; cell.border = XL_BORDER;
+}
+function xlStyleHeader(cell, value) {
+  cell.value = value; cell.font = { bold: true, size: 9, name: '돋움' }; cell.alignment = XL_CENTER; cell.fill = XL_GRAY; cell.border = XL_BORDER;
+}
+function xlStyleData(cell, value) {
+  cell.value = (value === undefined || value === null || value === '') ? '' : value;
+  cell.font = { size: 9, name: '돋움' }; cell.alignment = XL_CENTER; cell.border = XL_BORDER;
+}
+function xlWriteGroupedHeader(ws, row, groups) {
+  let col = 1;
+  const row2 = row + 1;
+  groups.forEach(g => {
+    if (!g.subs) {
+      ws.mergeCells(row, col, row2, col);
+      xlStyleHeader(ws.getCell(row, col), g.label);
+      col++;
+    } else {
+      ws.mergeCells(row, col, row, col + g.subs.length - 1);
+      xlStyleHeader(ws.getCell(row, col), g.label);
+      g.subs.forEach((s, i) => xlStyleHeader(ws.getCell(row2, col + i), s));
+      col += g.subs.length;
+    }
+  });
+  return col - 1;
+}
+function xlAddStatRows(ws, startRow, endRow, numericCols, totalCols) {
+  const stats = [['합계', 'SUM'], ['최대', 'MAX'], ['최소', 'MIN'], ['평균', 'AVERAGE']];
+  let r = endRow + 1;
+  stats.forEach(([label, fn]) => {
+    xlStyleHeader(ws.getCell(r, 1), label);
+    for (let c = 2; c <= totalCols; c++) {
+      const cell = ws.getCell(r, c);
+      if (numericCols.includes(c)) {
+        const colL = colLetter(c);
+        cell.value = { formula: `${fn}(${colL}${startRow}:${colL}${endRow})` };
+        cell.font = { size: 9, name: '돋움' }; cell.alignment = XL_CENTER; cell.border = XL_BORDER;
+        if (fn === 'AVERAGE') cell.numFmt = '0.00';
+      } else {
+        xlStyleData(cell, '');
+      }
+    }
+    r++;
+  });
+  return r;
+}
+
+// ── 시트1: 일지 (하루 전체화면을 세로로 이어붙임, 기존 구현 유지) ──
+function buildDailyLogSheet(wb, recs) {
+  const ws = wb.addWorksheet('일지');
+  for (let i = 1; i <= XL_COLS; i++) ws.getColumn(i).width = 14;
+
+  let row = 1;
+  recs.forEach(rec => {
+    const f = rec.flow || {}, sl = rec.sludge || {}, ch = rec.chemicals || {}, pw = rec.power || {};
+
+    ws.mergeCells(row, 1, row, XL_COLS);
+    xlStyleTitle(ws.getCell(row, 1), `${facilityTitle(rec)} 종합운영일지 (${fmtDate(rec.date)} ${dayKr(rec.date)})`, 13);
+    row++;
+
+    const infoLabels = ['날씨', '기온', '당직자', '현장담당자', '담당처리장', '작성자'];
+    const infoValues = [rec.weather || '-', `${fmt(rec.temp_min)}~${fmt(rec.temp_max)}℃`, rec.duty || '-', rec.manager || '-', summarizeSites(rec.sites), rec.writer || '-'];
+    infoLabels.forEach((h, i) => xlStyleHeader(ws.getCell(row, i + 1), h));
+    row++;
+    infoValues.forEach((v, i) => xlStyleData(ws.getCell(row, i + 1), v));
+    row++;
+
+    row = xlSectionTable(ws, row, '3. 하수 유입량, 처리수 방류유량', ['구분', '일일유량(㎥)', '적산유량(㎥)'], [
+      ['기존 SBR 유입', fmt(f.s1_in_d,0), fmt(f.s1_in_a,0)],
+      ['기존 SBR 방류', fmt(f.s1_out_d,0), fmt(f.s1_out_a,0)],
+      ['증설 SBR 유입', fmt(f.s2_in_d,0), fmt(f.s2_in_a,0)],
+      ['증설 SBR 방류', fmt(f.s2_out_d,0), fmt(f.s2_out_a,0)],
+      ['총 유입', fmt(f.tot_in_d,0), fmt(f.tot_in_a,0)],
+      ['총 방류', fmt(f.tot_out_d,0), fmt(f.tot_out_a,0)],
+    ]);
+
+    const reactorRows = [];
+    ['r1','r2'].forEach(rk => {
+      const sbrLabel = rk === 'r1' ? '기존SBR' : '증설SBR';
+      ['a','b'].forEach(sr => ['n','o','e'].forEach(z => {
+        const zoneLabel = { n:'혐기', o:'무산소', e:'호기' }[z];
+        const v = rec.reactor?.[rk]?.[sr] || {};
+        reactorRows.push([`${sbrLabel} ${sr.toUpperCase()}계열 ${zoneLabel}`, fmt(v[z+'_t']), fmt(v[z+'_do'],2), fmt(v[z+'_m'],0)]);
+      }));
+    });
+    row = xlSectionTable(ws, row, '4. 반응조 계통 운전현황', ['구분','수온(℃)','DO(mg/L)','MLSS(mg/L)'], reactorRows);
+
+    row = xlSectionTable(ws, row, '슬러지 계통', ['구분','일일(㎥)','적산(㎥)'], [
+      ['기존SBR 잉여슬러지 인발', fmt(sl.s1_d), fmt(sl.s1_a)],
+      ['증설SBR 잉여슬러지 인발', fmt(sl.s2_d), fmt(sl.s2_a)],
+      ['총 슬러지 반출량(ton)', fmt(sl.tot_d), fmt(sl.tot_a)],
+    ]);
+
+    row = xlSectionTable(ws, row, '5. 약품 및 재이용수 사용량', ['구분','일일','적산'], [
+      ['기존SBR PAC(kg)', fmt(ch.s1_pac_d), fmt(ch.s1_pac_a)],
+      ['기존SBR 폴리머(kg)', fmt(ch.s1_poly_d), fmt(ch.s1_poly_a)],
+      ['증설SBR PAC(kg)', fmt(ch.s2_pac_d), fmt(ch.s2_pac_a)],
+      ['재이용수(㎥)', fmt(ch.reuse_d), fmt(ch.reuse_a)],
+    ]);
+
+    row = xlSectionTable(ws, row, '6. 전력 사용량', ['구분','일일(kWh)','적산(kWh)'], [
+      ['전력 사용량', fmt(pw.d), fmt(pw.a)],
+    ]);
+
+    ws.mergeCells(row, 1, row, XL_COLS);
+    xlStyleHeader(ws.getCell(row, 1), '7. 금일 업무 및 특이사항');
+    row++;
+
+    const half = Math.floor(XL_COLS / 2);
+    ws.mergeCells(row, 1, row, half);
+    ws.mergeCells(row, half + 1, row, XL_COLS);
+    const allTasks = Object.values(rec.proc_tasks || {}).flat().map(t => '- ' + t).join('\n');
+    const c1 = ws.getCell(row, 1);
+    c1.value = `[금일 업무]\n${allTasks || '(입력 없음)'}${rec.special ? '\n\n[특이사항]\n' + rec.special : ''}`;
+    c1.alignment = { wrapText: true, vertical: 'top', horizontal: 'left' }; c1.border = XL_BORDER; c1.font = { name: '돋움', size: 9 };
+    const c2 = ws.getCell(row, half + 1);
+    c2.value = `[명일 예정]\n${rec.tomorrow || '(입력 없음)'}`;
+    c2.alignment = { wrapText: true, vertical: 'top', horizontal: 'left' }; c2.border = XL_BORDER; c2.font = { name: '돋움', size: 9 };
+    ws.getRow(row).height = 70;
+    row += 3;
+  });
+}
+
+// ── 시트2: 일일점검 (날짜별 1행 집계표, 원본 A1:X85 구조 반영) ──
+function buildDailyCheckSheet(wb, sheetName, recs, ym) {
+  const ws = wb.addWorksheet(sheetName);
+  const totalCols = 19;
+  ws.mergeCells(1, 1, 1, totalCols);
+  xlStyleTitle(ws.getCell(1, 1), `일일 점검 사항 (${ym})`, 15);
+  xlWriteGroupedHeader(ws, 2, [
+    { label: '구분(날짜)', subs: null },
+    { label: '기존 SBR', subs: ['유입량', '방류량'] },
+    { label: '증설 SBR', subs: ['유입량', '방류량'] },
+    { label: '총 일일유량', subs: ['유입량', '방류량'] },
+    { label: '슬러지 반출량(ton)', subs: null },
+    { label: '잉여슬러지 인발량', subs: ['기존SBR', '증설SBR'] },
+    { label: '기존SBR총인약품', subs: ['반응조(PAC)', '총인설비(폴리머)'] },
+    { label: '증설SBR총인약품', subs: ['반응조(PAC)', '재이용수'] },
+    { label: '전력사용량(kWh)', subs: ['일일', '적산'] },
+    { label: '날씨', subs: null },
+    { label: '기온(℃)', subs: ['최저', '최고'] },
+  ]);
+  let row = 4;
+  const startRow = row;
+  recs.forEach(rec => {
+    const f = rec.flow||{}, sl = rec.sludge||{}, ch = rec.chemicals||{}, pw = rec.power||{};
+    [rec.date, f.s1_in_d, f.s1_out_d, f.s2_in_d, f.s2_out_d, f.tot_in_d, f.tot_out_d,
+     sl.tot_d, sl.s1_d, sl.s2_d, ch.s1_pac_d, ch.s1_poly_d, ch.s2_pac_d, ch.reuse_d,
+     pw.d, pw.a, rec.weather || '-', rec.temp_min, rec.temp_max
+    ].forEach((v, i) => xlStyleData(ws.getCell(row, i + 1), v));
+    row++;
+  });
+  const endRow = row - 1;
+  if (endRow >= startRow) xlAddStatRows(ws, startRow, endRow, [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19], totalCols);
+  ws.columns.forEach(c => c.width = 11);
+}
+
+// ── 시트3: 우항월보(반응조) (날짜별 반응조 4계열 수온/DO/MLSS, 호기 구간 대표값 기준) ──
+function buildReactorMonthlySheet(wb, sheetName, recs, ym) {
+  const ws = wb.addWorksheet(sheetName);
+  const totalCols = 13;
+  ws.mergeCells(1, 1, 1, totalCols);
+  xlStyleTitle(ws.getCell(1, 1), `${ym.slice(0,4)}년 ${parseInt(ym.slice(5))}월 반응조`, 15);
+  ws.mergeCells(2, 1, 2, totalCols);
+  const note = ws.getCell(2, 1);
+  note.value = '측정 시점: 호기공정(배출 전) 기준 / 단위: mg/L'; note.font = { italic: true, size: 9, name: '돋움' }; note.alignment = XL_CENTER;
+  xlWriteGroupedHeader(ws, 3, [
+    { label: '날짜', subs: null },
+    { label: '기존SBR A계열', subs: ['수온(℃)', 'DO(mg/L)', 'MLSS(mg/L)'] },
+    { label: '기존SBR B계열', subs: ['수온(℃)', 'DO(mg/L)', 'MLSS(mg/L)'] },
+    { label: '증설SBR A계열', subs: ['수온(℃)', 'DO(mg/L)', 'MLSS(mg/L)'] },
+    { label: '증설SBR B계열', subs: ['수온(℃)', 'DO(mg/L)', 'MLSS(mg/L)'] },
+  ]);
+  let row = 5;
+  const startRow = row;
+  recs.forEach(rec => {
+    const rv = (rk, s) => rec.reactor?.[rk]?.[s] || {};
+    const r1a = rv('r1','a'), r1b = rv('r1','b'), r2a = rv('r2','a'), r2b = rv('r2','b');
+    [rec.date, r1a.e_t, r1a.e_do, r1a.e_m, r1b.e_t, r1b.e_do, r1b.e_m,
+     r2a.e_t, r2a.e_do, r2a.e_m, r2b.e_t, r2b.e_do, r2b.e_m
+    ].forEach((v, i) => xlStyleData(ws.getCell(row, i + 1), v));
+    row++;
+  });
+  const endRow = row - 1;
+  if (endRow >= startRow) xlAddStatRows(ws, startRow, endRow, [2,3,4,5,6,7,8,9,10,11,12,13], totalCols);
+  ws.columns.forEach(c => c.width = 11);
+}
+
+// ── 시트4: 월보 (날짜별 유량/반응조DO/약품/전력 월간표) ──
+function buildMonthlySummarySheet(wb, sheetName, recs, ym) {
+  const ws = wb.addWorksheet(sheetName);
+  const totalCols = 19;
+  ws.mergeCells(1, 1, 1, totalCols);
+  xlStyleTitle(ws.getCell(1, 1), `${parseInt(ym.slice(5))}월 월보`, 15);
+  xlWriteGroupedHeader(ws, 3, [
+    { label: '구분(날짜)', subs: null },
+    { label: '유 량(㎥/day)', subs: ['기존SBR 유입', '기존SBR 방류', '증설SBR 유입', '증설SBR 방류', '총 유입', '총 방류'] },
+    { label: '반응조 DO(mg/L, A/B 평균)', subs: ['기존혐기', '기존무산소', '기존호기', '증설혐기', '증설무산소', '증설호기'] },
+    { label: '약품 사용량', subs: ['기존SBR PAC', '기존 총인폴리머', '증설SBR PAC', '재이용수'] },
+    { label: '전력사용량(kWh)', subs: ['일일', '적산'] },
+  ]);
+  let row = 5;
+  const startRow = row;
+  const avg2 = (a, b) => (a != null && b != null) ? (a + b) / 2 : (a != null ? a : (b != null ? b : null));
+  recs.forEach(rec => {
+    const f = rec.flow||{}, ch = rec.chemicals||{}, pw = rec.power||{};
+    const r1a = rec.reactor?.r1?.a||{}, r1b = rec.reactor?.r1?.b||{}, r2a = rec.reactor?.r2?.a||{}, r2b = rec.reactor?.r2?.b||{};
+    [rec.date, f.s1_in_d, f.s1_out_d, f.s2_in_d, f.s2_out_d, f.tot_in_d, f.tot_out_d,
+     avg2(r1a.n_do, r1b.n_do), avg2(r1a.o_do, r1b.o_do), avg2(r1a.e_do, r1b.e_do),
+     avg2(r2a.n_do, r2b.n_do), avg2(r2a.o_do, r2b.o_do), avg2(r2a.e_do, r2b.e_do),
+     ch.s1_pac_d, ch.s1_poly_d, ch.s2_pac_d, ch.reuse_d, pw.d, pw.a
+    ].forEach((v, i) => xlStyleData(ws.getCell(row, i + 1), v));
+    row++;
+  });
+  const endRow = row - 1;
+  if (endRow >= startRow) xlAddStatRows(ws, startRow, endRow, [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19], totalCols);
+  ws.columns.forEach(c => c.width = 11);
+}
+
+// ── 시트5: 유입,방류 수온,pH (원본도 대부분 비어있던 시트 — 현재 앱은 이 값을 입력받지 않아 골격만 생성) ──
+function buildWqSheet(wb, sheetName, recs) {
+  const ws = wb.addWorksheet(sheetName);
+  ws.mergeCells(1, 1, 2, 1); xlStyleHeader(ws.getCell(1, 1), '날짜');
+  ws.mergeCells(1, 2, 1, 3); xlStyleHeader(ws.getCell(1, 2), '유입수');
+  xlStyleHeader(ws.getCell(2, 2), '수온'); xlStyleHeader(ws.getCell(2, 3), 'pH');
+  ws.mergeCells(1, 4, 1, 5); xlStyleHeader(ws.getCell(1, 4), '방류수');
+  xlStyleHeader(ws.getCell(2, 4), '수온'); xlStyleHeader(ws.getCell(2, 5), 'pH');
+  let row = 3;
+  recs.forEach(rec => {
+    xlStyleData(ws.getCell(row, 1), rec.date);
+    for (let c = 2; c <= 5; c++) xlStyleData(ws.getCell(row, c), '');
+    row++;
+  });
+  const noteCell = ws.getCell(row + 1, 1);
+  noteCell.value = '※ 현재 오늘 입력 화면에는 유입·방류 수온/pH 항목이 없어 값이 비어 있습니다. 필요하면 입력 항목 추가를 요청하세요.';
+  noteCell.font = { italic: true, size: 9, color: { argb: 'FF888888' } };
+  ws.columns.forEach(c => c.width = 12);
+}
+
+function xlSheetName(base, ym, totalMonths) {
+  return totalMonths > 1 ? `${base}_${ym}` : base;
+}
+
+async function exportOpsExcel() {
+  if (typeof ExcelJS === 'undefined') { showToast('엑셀 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하세요.', true); return; }
+  const recs = getRecords();
+  if (!recs.length) { showToast('저장된 데이터가 없습니다.', true); return; }
+  showToast('📥 엑셀 생성 중... 잠시만 기다려주세요 (시트 여러 개라 시간이 걸릴 수 있습니다).');
+
+  const wb = new ExcelJS.Workbook();
+  buildDailyLogSheet(wb, recs);
+
+  const byMonth = new Map();
+  recs.forEach(r => { const ym = r.date.slice(0, 7); if (!byMonth.has(ym)) byMonth.set(ym, []); byMonth.get(ym).push(r); });
+  const months = [...byMonth.keys()];
+  months.forEach(ym => {
+    const monthRecs = byMonth.get(ym);
+    buildDailyCheckSheet(wb, xlSheetName('일일점검', ym, months.length), monthRecs, ym);
+    buildReactorMonthlySheet(wb, xlSheetName('우항월보(반응조)', ym, months.length), monthRecs, ym);
+    buildMonthlySummarySheet(wb, xlSheetName('월보', ym, months.length), monthRecs, ym);
+    buildWqSheet(wb, xlSheetName('유입,방류 수온,pH', ym, months.length), monthRecs);
+  });
+
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `종합운영일지_전체_${new Date().toISOString().slice(0,10)}.xlsx`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`✅ 엑셀 다운로드 완료 — 시트 ${1 + months.length * 4}개 (일지 + 월별 4종 × ${months.length}개월)`);
 }
 
 // ==================== PRINT ====================
@@ -1745,61 +2243,75 @@ function printReport(tabId) {
   setTimeout(() => document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('print-target')), 1000);
 }
 
-// ==================== CSV EXPORT ====================
-function exportCSV() {
-  const recs = getRecords();
-  if (!recs.length) { showToast('저장된 데이터가 없습니다.', true); return; }
+// ==================== 사진 업로드 → AI 자동입력 (OCR) ====================
+let ocrTarget = null;
 
-  const headers = [
-    '날짜','파트','작성자','당직자','현장담당자','날씨','최저기온','최고기온',
-    '기존SBR_유입일일','기존SBR_방류일일','증설SBR_유입일일','증설SBR_방류일일','총유입일일','총방류일일',
-    '기존SBR_유입적산','기존SBR_방류적산','증설SBR_유입적산','증설SBR_방류적산','총유입적산','총방류적산',
-    'SBR1_A혐기수온','SBR1_A무산소수온','SBR1_A호기수온','SBR1_B혐기수온','SBR1_B무산소수온','SBR1_B호기수온',
-    'SBR1_A혐기DO','SBR1_A무산소DO','SBR1_A호기DO','SBR1_B혐기DO','SBR1_B무산소DO','SBR1_B호기DO',
-    'SBR1_A혐기MLSS','SBR1_A무산소MLSS','SBR1_A호기MLSS','SBR1_B혐기MLSS','SBR1_B무산소MLSS','SBR1_B호기MLSS',
-    'SBR2_A혐기수온','SBR2_A무산소수온','SBR2_A호기수온','SBR2_B혐기수온','SBR2_B무산소수온','SBR2_B호기수온',
-    'SBR2_A혐기DO','SBR2_A무산소DO','SBR2_A호기DO','SBR2_B혐기DO','SBR2_B무산소DO','SBR2_B호기DO',
-    'SBR2_A혐기MLSS','SBR2_A무산소MLSS','SBR2_A호기MLSS','SBR2_B혐기MLSS','SBR2_B무산소MLSS','SBR2_B호기MLSS',
-    '기존SBR_슬러지인발일일','기존SBR_슬러지인발적산','증설SBR_슬러지인발일일','증설SBR_슬러지인발적산','총슬러지반출ton일일','총슬러지반출ton적산',
-    '기존SBR_PAC일일','기존SBR_PAC적산','기존SBR_폴리머일일','기존SBR_폴리머적산','증설SBR_PAC일일','증설SBR_PAC적산','재이용수일일','재이용수적산',
-    '전력일일kWh','전력적산kWh',
-    '우항방문처리장','우항수행업무','우항특이사항','소규모방문처리장','소규모수행업무','소규모특이사항',
-    '종합업무체크','특이사항','명일예정업무'
-  ];
+function pickPhoto(target) {
+  const session = getSession();
+  if (!session || !(session.sites||[]).length) { showToast('처리장을 먼저 선택하세요.', true); return; }
+  ocrTarget = target;
+  document.getElementById('photo-input').click();
+}
 
-  const esc = v => v == null ? '' : String(v).replace(/"/g,'""');
-  const q = v => `"${esc(v)}"`;
-
-  const rows = recs.map(r => {
-    const f = r.flow||{}, rc = r.reactor||{}, sl = r.sludge||{}, ch = r.chemicals||{}, pw = r.power||{};
-    const rv = (rk, s, z, m) => rc[rk]?.[s]?.[z+'_'+m] ?? '';
-    return [
-      r.date, r.part, r.writer, r.duty, r.manager, r.weather, r.temp_min, r.temp_max,
-      f.s1_in_d, f.s1_out_d, f.s2_in_d, f.s2_out_d, f.tot_in_d, f.tot_out_d,
-      f.s1_in_a, f.s1_out_a, f.s2_in_a, f.s2_out_a, f.tot_in_a, f.tot_out_a,
-      rv('r1','a','n','t'), rv('r1','a','o','t'), rv('r1','a','e','t'), rv('r1','b','n','t'), rv('r1','b','o','t'), rv('r1','b','e','t'),
-      rv('r1','a','n','do'), rv('r1','a','o','do'), rv('r1','a','e','do'), rv('r1','b','n','do'), rv('r1','b','o','do'), rv('r1','b','e','do'),
-      rv('r1','a','n','m'), rv('r1','a','o','m'), rv('r1','a','e','m'), rv('r1','b','n','m'), rv('r1','b','o','m'), rv('r1','b','e','m'),
-      rv('r2','a','n','t'), rv('r2','a','o','t'), rv('r2','a','e','t'), rv('r2','b','n','t'), rv('r2','b','o','t'), rv('r2','b','e','t'),
-      rv('r2','a','n','do'), rv('r2','a','o','do'), rv('r2','a','e','do'), rv('r2','b','n','do'), rv('r2','b','o','do'), rv('r2','b','e','do'),
-      rv('r2','a','n','m'), rv('r2','a','o','m'), rv('r2','a','e','m'), rv('r2','b','n','m'), rv('r2','b','o','m'), rv('r2','b','e','m'),
-      sl.s1_d, sl.s1_a, sl.s2_d, sl.s2_a, sl.tot_d, sl.tot_a,
-      ch.s1_pac_d, ch.s1_pac_a, ch.s1_poly_d, ch.s1_poly_a, ch.s2_pac_d, ch.s2_pac_a, ch.reuse_d, ch.reuse_a,
-      pw.d, pw.a,
-      (r.uang_sites||[]).join('/'), (r.uang_tasks||[]).join(' | '), r.uang_note,
-      (r.small_sites||[]).join('/'), (r.small_tasks||[]).join(' | '), r.small_note,
-      (r.ops_tasks||[]).join(' | '), r.special, r.tomorrow
-    ].map(q).join(',');
+function compressImageToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 1280;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.75).split(',')[1]);
+      };
+      img.onerror = () => reject(new Error('이미지를 불러올 수 없습니다.'));
+      img.src = ev.target.result;
+    };
+    reader.onerror = () => reject(new Error('파일을 읽을 수 없습니다.'));
+    reader.readAsDataURL(file);
   });
+}
 
-  const bom = '﻿';
-  const csv = bom + [headers.join(','), ...rows].join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url;
-  a.download = `수처리_운영데이터_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click(); URL.revokeObjectURL(url);
-  showToast('📥 CSV 다운로드 완료');
+async function handlePhotoFile(e) {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file || !ocrTarget) return;
+  const target = ocrTarget;
+  showToast('📷 이미지 분석 중... (몇 초 소요될 수 있습니다)');
+  try {
+    const base64 = await compressImageToBase64(file);
+    const res = await fetch(SHEETS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'ocr', table: target, image: base64, key: APP_KEY })
+    });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || 'AI 인식 실패');
+    applyOcrResult(data.values || {});
+    showOcrBanner(target);
+    showToast('✅ AI 자동입력 완료 — 값을 확인 후 저장하세요.');
+  } catch (err) {
+    showToast('❌ 자동입력 실패: ' + err.message + ' — 수기로 입력해주세요.', true);
+  }
+}
+
+function applyOcrResult(values) {
+  Object.entries(values).forEach(([id, v]) => {
+    const el = document.getElementById(id);
+    if (el && v != null && v !== '') el.value = v;
+  });
+}
+
+function showOcrBanner(target) {
+  const el = document.getElementById('ocr-banner-' + target);
+  if (el) el.classList.add('show');
+}
+function hideOcrBanners() {
+  document.querySelectorAll('.ocr-banner').forEach(el => el.classList.remove('show'));
 }
 
 // ==================== INIT ====================
@@ -1809,16 +2321,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
   initDefaultEmployees();
   populateLoginSelect();
-  renderPartChecklists('환경');
 
   const session = getSession();
   if (session) {
-    // 이미 로그인된 경우
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('header-date').textContent = today.replace(/-/g, '.');
     applySession(session);
+    if (!(session.sites||[]).length) openFacilityModal();
+    autoLoadTodayOnOpen();
   } else {
-    // 로그인 화면 표시
     document.getElementById('header-date').textContent = today.replace(/-/g, '.');
   }
 });
