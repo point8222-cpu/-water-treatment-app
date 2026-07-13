@@ -233,8 +233,6 @@ input[type="number"] { text-align: right; }
 }
 .btn-login:hover { background: #154360; }
 .btn-login:disabled { background: #95a5a6; cursor: not-allowed; }
-.btn-emp-manage { width: 100%; padding: 10px; background: transparent; color: #95a5a6; border: none; font-size: 12px; cursor: pointer; font-family: inherit; }
-.btn-emp-manage:hover { color: #1a5276; }
 
 /* 헤더 유저 칩 */
 .user-chip { display: flex; align-items: center; gap: 8px; }
@@ -257,8 +255,6 @@ input[type="number"] { text-align: right; }
   max-height: 82vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
 .modal-box h3 { font-size: 15px; font-weight: 700; color: #1a5276; margin-bottom: 16px; }
-.emp-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border: 1px solid #edf2f7; border-radius: 8px; margin-bottom: 6px; }
-.emp-row .emp-info { font-size: 13px; }
 .add-emp-row { display: flex; gap: 8px; margin-top: 14px; }
 .add-emp-row input { flex: 1; padding: 8px 10px; border: 1.5px solid #dde4ed; border-radius: 8px; font-size: 13px; font-family: inherit; }
 .add-emp-row button { padding: 8px 14px; background: #1a5276; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; }
@@ -325,25 +321,6 @@ input[type="number"] { text-align: right; }
       <option value="">-- 이름을 선택하세요 --</option>
     </select>
     <button class="btn-login" id="btn-do-login" disabled onclick="doLogin()">입력 시작하기</button>
-    <button class="btn-emp-manage" onclick="showEmpModal()">⚙️ 직원 명단 관리</button>
-  </div>
-</div>
-
-<!-- 직원 관리 모달 -->
-<div id="emp-modal" class="modal-overlay hidden">
-  <div class="modal-box">
-    <h3>👥 직원 명단 관리</h3>
-    <div id="emp-admin-list"></div>
-    <div class="add-emp-row">
-      <input id="new-emp-name" placeholder="이름" maxlength="10">
-      <select id="new-emp-role">
-        <option value="env">환경</option>
-        <option value="mech">기계</option>
-        <option value="elec">전기</option>
-      </select>
-      <button onclick="addEmployee()">추가</button>
-    </div>
-    <button class="modal-close" onclick="closeEmpModal()">닫기</button>
   </div>
 </div>
 
@@ -880,6 +857,46 @@ function initDefaultEmployees() {
   }
 }
 
+// ==================== 직원 명단 — 구글시트로 기기간 동기화 ====================
+// localStorage는 기기·브라우저마다 따로 저장돼서 명단이 서로 안 맞는 문제가 있었다.
+// 그래서 구글시트의 "직원명단" 시트를 공용 원본으로 쓰고, 앱을 열 때마다 그걸 받아와
+// localStorage에 덮어써서 항상 모든 기기가 같은 명단을 보게 한다. 관리자가 직원을
+// 추가·삭제·직무변경 하면 그 즉시 구글시트에도 반영한다(다른 기기는 다음 접속 때 받아감).
+async function fetchRemoteEmployees() {
+  if (!SHEETS_URL) return null;
+  try {
+    const res = await fetch(`${SHEETS_URL}?action=employees&key=${encodeURIComponent(APP_KEY)}`);
+    const data = await res.json();
+    return (data && data.status === 'ok') ? data.employees : null;
+  } catch (e) {
+    return null;
+  }
+}
+async function syncEmployeesToSheet(emps) {
+  if (!SHEETS_URL) return;
+  try {
+    await fetch(SHEETS_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'save_employees', key: APP_KEY, employees: emps })
+    });
+  } catch (e) {
+    console.warn('직원 명단 동기화 실패:', e);
+  }
+}
+// 앱 시작 시 호출: 구글시트에 저장된 명단이 있으면 그걸 이 기기의 localStorage에 덮어써서
+// 모든 기기가 같은 명단을 보게 한다. 시트가 비어있으면(최초 1회) 이 기기의 기본값을 시트로 올려
+// 그때부터 공용 원본으로 삼는다.
+async function syncEmployeesOnLoad() {
+  const remote = await fetchRemoteEmployees();
+  if (remote && remote.length) {
+    setEmployees(remote);
+  } else if (remote && remote.length === 0) {
+    await syncEmployeesToSheet(getEmployees());
+  }
+  populateLoginSelect();
+}
+
 function populateLoginSelect() {
   const sel = document.getElementById('login-select');
   const emps = getEmployees();
@@ -928,7 +945,6 @@ function updateHeaderChip(session) {
   document.getElementById('header-right').innerHTML = `
     <span class="fac-tag" title="변경" onclick="openFacilityModal()">🏭 ${sitesLabel}</span>
     <span class="name">${session.name} <small>(${ROLE_LABELS[session.role] || '환경'})</small></span>
-    <button class="btn-logout" onclick="showEmpModal()" style="margin-right:6px;">⚙️ 직원 관리</button>
     <button class="btn-logout" onclick="logout()">로그아웃</button>
   `;
 }
@@ -949,55 +965,6 @@ function logout() {
   populateLoginSelect();
   document.getElementById('login-select').value = '';
   onLoginSelectChange();
-}
-
-// ── 직원 관리 모달 ──
-function showEmpModal() {
-  renderEmpAdminList();
-  populateLoginSelect();
-  document.getElementById('emp-modal').classList.remove('hidden');
-}
-function closeEmpModal() {
-  document.getElementById('emp-modal').classList.add('hidden');
-  populateLoginSelect();
-}
-function renderEmpAdminList() {
-  const emps = getEmployees();
-  const el = document.getElementById('emp-admin-list');
-  if (!emps.length) { el.innerHTML = '<p style="color:#95a5a6;font-size:13px;text-align:center;padding:10px;">등록된 직원이 없습니다.</p>'; return; }
-  el.innerHTML = emps.map((e, i) => `
-    <div class="emp-row">
-      <div class="emp-info"><strong>${e.name}</strong></div>
-      <select onchange="setEmployeeRole(${i}, this.value)" style="margin-right:6px;">
-        ${Object.entries(ROLE_LABELS).map(([v, label]) => `<option value="${v}"${e.role===v?' selected':''}>${label}</option>`).join('')}
-      </select>
-      <button class="btn-icon danger" onclick="deleteEmployee(${i})">삭제</button>
-    </div>
-  `).join('');
-}
-function addEmployee() {
-  const name = document.getElementById('new-emp-name').value.trim();
-  if (!name) { alert('이름을 입력하세요.'); return; }
-  const emps = getEmployees();
-  if (emps.some(e => e.name === name)) { alert('이미 등록된 이름입니다.'); return; }
-  const role = document.getElementById('new-emp-role')?.value || 'env';
-  emps.push({ name, role });
-  setEmployees(emps);
-  document.getElementById('new-emp-name').value = '';
-  renderEmpAdminList();
-}
-function setEmployeeRole(i, role) {
-  const emps = getEmployees();
-  if (!emps[i]) return;
-  emps[i].role = role;
-  setEmployees(emps);
-}
-function deleteEmployee(i) {
-  const emps = getEmployees();
-  if (!confirm(`"${emps[i].name}" 직원을 삭제할까요?`)) return;
-  emps.splice(i, 1);
-  setEmployees(emps);
-  renderEmpAdminList();
 }
 
 // ==================== 처리장 선택 모달 ====================
@@ -2722,6 +2689,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   initDefaultEmployees();
   populateLoginSelect();
+  syncEmployeesOnLoad(); // 구글시트에 저장된 공용 명단이 있으면 이걸로 다시 덮어씀(비동기)
   renderEquipLog();
 
   const session = getSession();
